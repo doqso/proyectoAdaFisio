@@ -56,7 +56,7 @@ public class Main {
     }
 
     private static void getAppointmentsByTreatedAreas(){
-        String[] areas = {"cervical", "lumbara", "elbow"};
+        String[] areas = {"cervical", "lumbar"};
         PDS.getAppointmentssByTreatedArea(areas)
                 .forEach(a -> System.out.println(
                         ASCIIColors.GREEN.getColor() +

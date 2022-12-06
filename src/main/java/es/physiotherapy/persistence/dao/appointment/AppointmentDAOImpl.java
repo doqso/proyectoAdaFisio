@@ -30,7 +30,7 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
     }
 
     @Override
-    public List<Appointment> findAppointmentsByDni(String dni) {
+    public List<Appointment> findAppointmentByDni(String dni) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Appointment> criteria = builder.createQuery(Appointment.class);
@@ -77,7 +77,6 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
             for (String area : areas) {
                 predicate = builder.and(predicate, builder.isTrue(join.get(area)));
             }
-
             criteria.where(predicate);
             return session.createQuery(criteria).getResultList();
         }

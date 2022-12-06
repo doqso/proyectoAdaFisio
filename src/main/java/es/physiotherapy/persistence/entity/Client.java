@@ -1,5 +1,6 @@
 package es.physiotherapy.persistence.entity;
 
+import es.physiotherapy.persistence.Helpers.ASCIIColors;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -127,14 +128,13 @@ public class Client {
 
     @Override
     public String toString() {
-        return "Client{" +
-                "dni='" + dni + '\'' +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                ", city='" + city + '\'' +
-                ", birthDate=" + birthDate +
-                '}';
+        return ASCIIColors.GREEN.getColor() +
+                "Client\t\t\t\t" + ASCIIColors.PURPLE.getColor() + dni + "\n" +
+                ASCIIColors.BLUE.getColor() + "name" + "\t\t\t\tsurname" + "\n" +
+                ASCIIColors.RESET.getColor() + name + "\t\t\t\t" + surname + "\n" +
+                ASCIIColors.BLUE.getColor() + "phone" + "\t\t\t\taddress" + "\n" +
+                ASCIIColors.RESET.getColor() + phone + "\t\t\t" + address + "\n" +
+                ASCIIColors.BLUE.getColor() + "birthDate" + "\t\t\tcity" + "\n" +
+                ASCIIColors.RESET.getColor() + birthDate + "\t\t\t" + city + "\n" + "-".repeat(50);
     }
 }

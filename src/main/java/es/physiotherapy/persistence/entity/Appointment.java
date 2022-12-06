@@ -1,8 +1,7 @@
 package es.physiotherapy.persistence.entity;
 
+import es.physiotherapy.persistence.Helpers.ASCIIColors;
 import jakarta.persistence.*;
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 
 import java.sql.Time;
 import java.time.LocalDate;
@@ -107,10 +106,10 @@ public class Appointment {
 
     @Override
     public String toString() {
-        return "Appointment{" +
-                "id=" + id +
-                ", date=" + date +
-                ", time=" + time +
-                ", duration=" + duration +'}';
+        return ASCIIColors.GREEN.getColor() +
+                "Appointment\t\t" + ASCIIColors.PURPLE.getColor() + "Nº" + id + "\n" +
+                ASCIIColors.BLUE.getColor() + "date" + "\t\t\ttime" + "\t\t\tduration\n" +
+                ASCIIColors.RESET.getColor() + date + "\t\t" + time + "\t\t" + duration + "\n" +
+                (treatedArea != null ? treatedArea + "\n" : "") + "-".repeat(50);
     }
 }

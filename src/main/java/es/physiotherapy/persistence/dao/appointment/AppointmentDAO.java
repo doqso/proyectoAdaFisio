@@ -9,7 +9,7 @@ import java.util.List;
 public interface AppointmentDAO extends GenericDao<Appointment, Long> {
     Appointment findAppointmentById(Long id);
 
-    List<Appointment> findAppointmentsByDni(String dni);
+    List<Appointment> findAppointmentByDni(String dni);
 
     List<Appointment> findAllAppointments();
 

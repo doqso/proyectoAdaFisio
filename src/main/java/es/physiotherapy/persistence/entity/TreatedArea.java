@@ -1,7 +1,9 @@
 package es.physiotherapy.persistence.entity;
 
+import es.physiotherapy.persistence.Helpers.ASCIIColors;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -136,6 +138,25 @@ public class TreatedArea {
         this.foot = foot;
     }
 
+    public void setTreatedAreas(List<String> areas){
+        for (String area : areas) {
+            switch (area.toLowerCase().trim()) {
+                case "cervical" -> setCervical(true);
+                case "dorsal" -> setDorsal(true);
+                case "lumbar" -> setLumbar(true);
+                case "sacroiliac" -> setSacroiliac(true);
+                case "shoulder" -> setShoulder(true);
+                case "elbow" -> setElbow(true);
+                case "wrist" -> setWrist(true);
+                case "hand" -> setHand(true);
+                case "hip" -> setHip(true);
+                case "knee" -> setKnee(true);
+                case "ankle" -> setAnkle(true);
+                case "foot" -> setFoot(true);
+            }
+        }
+    }
+
     public String getObservations() {
         return observations;
     }
@@ -159,19 +180,15 @@ public class TreatedArea {
 
     @Override
     public String toString() {
-        return "TreatedArea{" +
-                "cervical=" + cervical +
-                ", dorsal=" + dorsal +
-                ", lumbar=" + lumbar +
-                ", sacroiliac=" + sacroiliac +
-                ", shoulder=" + shoulder +
-                ", elbow=" + elbow +
-                ", wrist=" + wrist +
-                ", hand=" + hand +
-                ", hip=" + hip +
-                ", knee=" + knee +
-                ", ankle=" + ankle +
-                ", foot=" + foot +
-                ", observations='" + observations + '}';
+        return ASCIIColors.GREEN.getColor() +
+                "Treated areas" + "\n" +
+                ASCIIColors.BLUE.getColor() + "cervical" + "\tdorsal" + "\tlumbar" + "\tsacroiliac\n" +
+                ASCIIColors.RESET.getColor() + cervical + "\t\t" + dorsal + "\t" + lumbar + "\t" + sacroiliac + "\n" +
+                ASCIIColors.BLUE.getColor() + "shoulder" + "\telbow" + "\twrist" + "\thand\n" +
+                ASCIIColors.RESET.getColor() + shoulder + "\t\t" + elbow + "\t" + wrist + "\t" + hand + "\n" +
+                ASCIIColors.BLUE.getColor() + "hip" + "\t\t\tknee" + "\tankle" + "\tfoot\n" +
+                ASCIIColors.RESET.getColor() + hip + "\t\t" + knee + "\t" + ankle + "\t" + foot + "\n" +
+                ASCIIColors.BLUE.getColor() + "observations" + "\n" +
+                ASCIIColors.RESET.getColor() + observations;
     }
 }
