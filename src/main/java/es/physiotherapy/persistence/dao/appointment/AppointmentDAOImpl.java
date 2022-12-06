@@ -25,7 +25,7 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
             Root<Appointment> root = criteria.from(Appointment.class);
 
             criteria.where(builder.equal(root.get(Appointment_.id), id));
-            return session.createQuery(criteria).getSingleResult();
+            return session.createQuery(criteria).getSingleResultOrNull();
         }
     }
 

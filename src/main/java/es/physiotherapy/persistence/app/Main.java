@@ -9,6 +9,7 @@ import es.physiotherapy.persistence.service.PersonalDataService;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,16 +19,16 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Hello Physio Appointment Management!");
         System.out.println("what do you want to do?");
-        byte opt = 0;
+        byte opt = 5;
         Scanner sc = new Scanner(System.in);
         menuOptions();
         do {
             System.out.println(ASCIIColors.BLUE.getColor() + "5. Print menu again");
             System.out.println("0. Exit" + ASCIIColors.RESET.getColor() + "\n");
             System.out.print("Option -> ");
-            opt = sc.nextByte();
-            sc.nextLine();
             try {
+                opt = sc.nextByte();
+                sc.nextLine();
                 switch (opt) {
                     // Clients
                     case 11 -> createClient(sc);
@@ -54,10 +55,15 @@ public class Main {
                     // Menu
                     case 5 -> menuOptions();
                     default -> System.out.println(ASCIIColors.RED.getColor()
-                            + "Invalid option" + ASCIIColors.RESET.getColor());
+                            + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
                 }
+            } catch (InputMismatchException e) {
+                System.out.println(ASCIIColors.RED.getColor()
+                        + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
+                sc.nextLine();
             } catch (Exception e) {
-                System.err.println("Error: " + e.getMessage() + "\n");
+                System.out.println(ASCIIColors.RED.getColor() +
+                        "Error: " + e.getMessage() + "\n");
             }
         } while (opt != 0);
     }
@@ -66,21 +72,30 @@ public class Main {
         System.out.print("Treated Area ID -> ");
         long id = sc.nextLong();
         sc.nextLine();
-        TreatedArea treatedArea = new TreatedArea(PDS.getAppointmentById(id));
+        Appointment appointment = PDS.getAppointmentById(id);
+        if (appointment == null) throw new RuntimeException("Treated area not found");
+        TreatedArea treatedArea = new TreatedArea(appointment);
         PDS.deleteTreatedArea(treatedArea);
     }
 
     private static void updateTreatedArea(Scanner sc) {
-        System.out.println("Enter treated area id: ");
+        System.out.println("Enter appointment id: ");
         long id = sc.nextLong();
         sc.nextLine();
         TreatedArea oldTreatedArea = PDS.getTreatedAreaById(id);
+        if (oldTreatedArea == null) throw new RuntimeException("Treated Area not found");
         TreatedArea newTreatedArea = new TreatedArea(oldTreatedArea.getAppointment());
         newTreatedArea.setObservations(oldTreatedArea.getObservations());
         System.out.println("Enter treated areas (separated by space): ");
         String[] treatedAreaStrings = sc.nextLine().split("\\s+");
         newTreatedArea.setTreatedAreas(List.of(treatedAreaStrings));
+        System.out.println("Enter observations (optional): ");
+        String observations = sc.nextLine().trim();
+        if (!observations.isBlank())
+            newTreatedArea.setObservations(observations);
+        else newTreatedArea.setObservations(oldTreatedArea.getObservations());
         PDS.updateTreatedArea(newTreatedArea);
+        printText("Treated Area updated successfully");
     }
 
     private static void createTreatedArea(Scanner sc) {
@@ -88,10 +103,16 @@ public class Main {
         System.out.print("Appointment ID -> ");
         long id = sc.nextLong();
         sc.nextLine();
-        TreatedArea treatedArea = new TreatedArea(PDS.getAppointmentById(id));
+        Appointment appointment = PDS.getAppointmentById(id);
+        if (appointment == null) throw new RuntimeException("Appointment not found");
+        TreatedArea treatedArea = new TreatedArea(appointment);
         System.out.print("Treated Areas (separated by space) -> ");
         String[] treatedAreaStrings = sc.nextLine().split("\\s+");
         treatedArea.setTreatedAreas(List.of(treatedAreaStrings));
+        System.out.print("Observations (optional) -> ");
+        String observations = sc.nextLine().trim();
+        if (!observations.isBlank())
+            treatedArea.setObservations(observations);
         PDS.createTreatedArea(treatedArea);
         printText("Treated Area created successfully");
     }
@@ -100,7 +121,9 @@ public class Main {
         System.out.print("Appointment ID -> ");
         long id = sc.nextLong();
         sc.nextLine();
-        PDS.deleteAppointment(PDS.getAppointmentById(id));
+        Appointment appointment = PDS.getAppointmentById(id);
+        if (appointment == null) throw new RuntimeException("Appointment not found");
+        PDS.deleteAppointment(appointment);
         printText("Appointment deleted");
     }
 
@@ -109,17 +132,15 @@ public class Main {
         long id = sc.nextLong();
         sc.nextLine();
         Appointment appointment = PDS.getAppointmentById(id);
+        if (appointment == null) throw new RuntimeException("Appointment not found");
         System.out.println("Enter the new date (dd/mm/yyyy)");
         LocalDate date = HelperMethods.dateParser(sc.nextLine());
         System.out.println("Enter the new time (hh:mm)");
         Time time = HelperMethods.timeParser(sc.nextLine());
-        System.out.println("Enter the new client DNI");
-        String dni = sc.nextLine();
         System.out.println("Enter the new duration (in minutes)");
         int duration = sc.nextInt();
         appointment.setDate(date);
         appointment.setTime(time);
-        appointment.setClient(PDS.getClientByDni(dni));
         appointment.setDuration(duration);
         PDS.updateAppointment(appointment);
         printText("Appointment updated");
@@ -129,12 +150,7 @@ public class Main {
         System.out.print("DNI -> ");
         String dni = sc.nextLine();
         Client client = PDS.getClientByDni(dni);
-        if (client == null) {
-            System.out.println(
-                    ASCIIColors.RED.getColor() +
-                            "Client not found" + ASCIIColors.RESET.getColor());
-            return;
-        }
+        if (client == null) throw new RuntimeException("Client not found");
         PDS.deleteClient(client);
         printText("Client deleted");
     }
@@ -143,12 +159,7 @@ public class Main {
         System.out.println("Enter the DNI of the client to update");
         String dni = sc.nextLine();
         Client client = PDS.getClientByDni(dni);
-        if (client == null) {
-            System.out.println(
-                    ASCIIColors.RED.getColor() +
-                            "Client not found" + ASCIIColors.RESET.getColor());
-            return;
-        }
+        if (client == null) throw new RuntimeException("Client not found");
         System.out.println("Enter the new name");
         String name = sc.nextLine();
         System.out.println("Enter the new surname");
@@ -193,8 +204,8 @@ public class Main {
         System.out.print("DNI -> ");
         String dni = sc.nextLine();
         Client client = PDS.getClientByDni(dni);
-        if (client == null) System.out.println("Client not found");
-        else printText(client);
+        if (client == null) throw new RuntimeException("Client not found");
+        printText(client);
     }
 
     private static void getAppointmentsByClient(Scanner sc) {
@@ -236,12 +247,13 @@ public class Main {
         System.out.print("Enter the client dni ");
         String dni = sc.nextLine();
         Client client = PDS.getClientByDni(dni);
+        if (client == null) throw new RuntimeException("Client not found");
         appointment.setClient(client);
         System.out.println("Enter the date (yyyy-mm-dd) ");
         appointment.setDate(HelperMethods.dateParser(sc.nextLine()));
         System.out.println("Enter the time (hh:mm) ");
         appointment.setTime(HelperMethods.timeParser(sc.nextLine()));
-        System.out.println("Enter the duration ");
+        System.out.println("Enter the duration (in minutes) ");
         appointment.setDuration(sc.nextInt());
         sc.nextLine();
         System.out.println("Enter the areas to treat with (separated by space) ");
@@ -283,23 +295,18 @@ public class Main {
 
     private static void menuOptions() {
         System.out.println();
-        System.out.println(ASCIIColors.BLUE.getColor() + "1. Client Management" + ASCIIColors.RESET.getColor());
-        System.out.println(ASCIIColors.CYAN.getColor() + "\t11. Create a new client");
-        System.out.println("\t12. Get all clients");
-        System.out.println("\t13. Get a client by DNI");
-        System.out.println("\t14. Get clients by city");
-        System.out.println("\t15. Get clients after birth date");
-        System.out.println("\t16. Get clients before birth date");
-        System.out.println("\t17. Update a client");
-        System.out.println("\t18. Delete a client" + ASCIIColors.RESET.getColor());
-        System.out.println(ASCIIColors.BLUE.getColor() + "2. Appointment Management" + ASCIIColors.RESET.getColor());
-        System.out.println(ASCIIColors.CYAN.getColor() + "\t21. Create a new appointment");
-        System.out.println("\t22. Get all appointments");
-        System.out.println("\t23. Get all appointments of a client");
-        System.out.println("\t24. Get all appointments after a date");
-        System.out.println("\t25. Get all appointments before a date");
-        System.out.println("\t26. Get all appointments between two dates");
-        System.out.println("\t27. Update an appointment");
-        System.out.println("\t28. Delete an appointment" + ASCIIColors.RESET.getColor());
+        System.out.println(ASCIIColors.BLUE.getColor() + "1 - Client Management\t\t\t\t\t" + "2 - Appointment Management");
+        System.out.println(ASCIIColors.CYAN.getColor() + "11. Create a new client\t\t\t\t\t" + "21. Create a new appointment");
+        System.out.println("12. Get all clients\t\t\t\t\t\t" + "22. Get all appointments");
+        System.out.println("13. Get a client by DNI\t\t\t\t\t" + "23. Get all appointments of a client");
+        System.out.println("14. Get clients by city\t\t\t\t\t" + "24. Get all appointments after a date");
+        System.out.println("15. Get clients after birth date\t\t" + "25. Get all appointments before a date");
+        System.out.println("16. Get clients before birth date\t\t" + "26. Get all appointments between two dates");
+        System.out.println("17. Update a client\t\t\t\t\t\t" + "27. Update an appointment");
+        System.out.println("18. Delete a client\t\t\t\t\t\t" + "28. Delete an appointment");
+        System.out.println(ASCIIColors.BLUE.getColor() + "3 - Treatment area");
+        System.out.println(ASCIIColors.CYAN.getColor() + "31. Create treatment areas");
+        System.out.println("32. Update a treatment area");
+        System.out.println("33. Delete a treatment area" + ASCIIColors.RESET.getColor());
     }
 }

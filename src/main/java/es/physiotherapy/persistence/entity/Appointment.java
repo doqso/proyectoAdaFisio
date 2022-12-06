@@ -108,8 +108,8 @@ public class Appointment {
     public String toString() {
         return ASCIIColors.GREEN.getColor() +
                 "Appointment\t\t" + ASCIIColors.PURPLE.getColor() + "Nº" + id + "\n" +
-                ASCIIColors.BLUE.getColor() + "date" + "\t\t\ttime" + "\t\t\tduration\n" +
-                ASCIIColors.RESET.getColor() + date + "\t\t" + time + "\t\t" + duration + "\n" +
+                ASCIIColors.BLUE.getColor() + "client" + "\t\tdate" + "\t\t\ttime" + "\t\t\tduration\n" +
+                ASCIIColors.RESET.getColor() + client.getDni() + "\t" + date + "\t\t" + time + "\t\t" + duration + "\n" +
                 (treatedArea != null ? treatedArea + "\n" : "") + "-".repeat(50);
     }
 }
