@@ -48,8 +48,7 @@ public class ClientDAOImpl extends GenericDAOImpl<Client, String> implements Cli
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Client> criteria = builder.createQuery(Client.class);
-            Root<Client> root = criteria.from(Client.class);
-            criteria.select(root);
+            criteria.from(Client.class);
             return session.createQuery(criteria).getResultList();
         }
     }

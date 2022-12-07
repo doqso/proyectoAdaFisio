@@ -1,7 +1,7 @@
 package es.physiotherapy.persistence.app;
 
-import es.physiotherapy.persistence.Helpers.ASCIIColors;
-import es.physiotherapy.persistence.Helpers.HelperMethods;
+import es.physiotherapy.persistence.util.ASCIIColors;
+import es.physiotherapy.persistence.util.HelperMethods;
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
 import es.physiotherapy.persistence.entity.TreatedArea;
@@ -55,6 +55,7 @@ public class Main {
                     case 33 -> deleteTreatedArea(sc);
                     // Menu
                     case 5 -> menuOptions();
+                    case 0 -> System.out.println("Bye!");
                     default -> System.out.println(ASCIIColors.RED.getColor()
                             + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
                 }
@@ -69,7 +70,7 @@ public class Main {
         } while (opt != 0);
     }
 
-    private static void getAppointmentsByTreatedArea(Scanner sc) {
+    private static void getAppointmentsByTreatedArea(Scanner sc) throws NoSuchFieldException {
         System.out.println("Enter treated areas (separated by spaces): ");
         String[] description = sc.nextLine().split("\\s+");
         List<Appointment> appointments = PDS.getAppointmentsByTreatedArea(description);

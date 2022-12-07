@@ -1,4 +1,4 @@
-package es.physiotherapy.persistence.Helpers;
+package es.physiotherapy.persistence.util;
 
 public enum ASCIIColors {
     RESET("\u001B[0m"),

@@ -1,8 +1,13 @@
-import es.physiotherapy.persistence.Helpers.ASCIIColors;
-import es.physiotherapy.persistence.entity.*;
-import es.physiotherapy.persistence.Helpers.HelperMethods;
+import es.physiotherapy.persistence.entity.Appointment;
+import es.physiotherapy.persistence.entity.Client;
+import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.service.PersonalDataService;
+import es.physiotherapy.persistence.util.ASCIIColors;
+import es.physiotherapy.persistence.util.HelperMethods;
+import es.physiotherapy.persistence.util.XMLMethods;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,8 +16,29 @@ import java.util.List;
 public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        Object d = new Client();
+        System.out.println(d.getClass());
+    }
 
+    private static <T> void testingGenericMethods(T[] entities) {
+        if (entities.length == 0) return;
+        var entityClass = entities[0].getClass();
+        // get field values
+        for (T entity : entities) {
+            for (Field f : entityClass.getDeclaredFields()) {
+                f.setAccessible(true);
+                String fieldType = f.getType().getSimpleName();
+                if (fieldType.equals("Client") || fieldType.equals("TreatedArea")
+                        || fieldType.equals("Appointment")
+                        || fieldType.equals("List")) continue;
+                try {
+                    System.out.println(f.getName() + ": " + f.get(entity));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private static void createAppointmentAndTreatedArea() {
@@ -47,7 +73,7 @@ public class Main {
         PDS.createClient(client);
     }
 
-    private static void getAppointmentsByTreatedAreas(){
+    private static void getAppointmentsByTreatedAreas() throws NoSuchFieldException {
         String[] areas = {"cervical", "lumbar"};
         PDS.getAppointmentsByTreatedArea(areas)
                 .forEach(a -> System.out.println(

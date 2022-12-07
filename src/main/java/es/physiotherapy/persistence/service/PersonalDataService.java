@@ -1,6 +1,6 @@
 package es.physiotherapy.persistence.service;
 
-import es.physiotherapy.persistence.Helpers.HelperMethods;
+import es.physiotherapy.persistence.util.HelperMethods;
 import es.physiotherapy.persistence.dao.appointment.AppointmentDAO;
 import es.physiotherapy.persistence.dao.appointment.AppointmentDAOImpl;
 import es.physiotherapy.persistence.dao.client.ClientDAO;
@@ -100,9 +100,6 @@ public class PersonalDataService {
         return opt.orElse(null);
     }
 
-    public List<TreatedArea> getTreatedAreasByDni(String dni) {
-        return treatedAreaDAO.findTreatedAreasByDni(dni);
-    }
 
     public List<Appointment> getAppointmentsAfterDate(LocalDate date) {
         return appointmentDAO.findAppointmentsBetweenDate(date, LocalDate.now());
@@ -116,7 +113,7 @@ public class PersonalDataService {
         return appointmentDAO.findAppointmentsBetweenDate(date1, date2);
     }
 
-    public List<Appointment> getAppointmentsByTreatedArea(String[] areasString) {
+    public List<Appointment> getAppointmentsByTreatedArea(String[] areasString) throws NoSuchFieldException {
         List<String> areas = HelperMethods.getListOfValidTreatedAreaStrings(areasString);
         return (areas.size() > 0)
                 ? appointmentDAO.findAppointmentsByTreatedAreas(areas)

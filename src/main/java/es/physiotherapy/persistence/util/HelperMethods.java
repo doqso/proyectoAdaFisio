@@ -1,7 +1,6 @@
-package es.physiotherapy.persistence.Helpers;
+package es.physiotherapy.persistence.util;
 
 import es.physiotherapy.persistence.entity.TreatedArea;
-import es.physiotherapy.persistence.entity.TreatedArea_;
 
 import java.lang.reflect.Field;
 import java.sql.Time;
@@ -40,25 +39,24 @@ public class HelperMethods {
         return Time.valueOf(localTime);
     }
 
-    public static List<String> getListOfValidTreatedAreaStrings(String[] areaStrings){
+    public static List<String> getListOfValidTreatedAreaStrings(String[] areaStrings) throws NoSuchFieldException {
         List<String> areas = new ArrayList<>();
-        for (String area : areaStrings) {
-            try {
-                area = area.trim().toLowerCase();
+        String area = "";
+        try {
+            for (String areaIterator : areaStrings) {
+                area = areaIterator.trim().toLowerCase();
                 TreatedArea.class.getDeclaredField(area);
                 areas.add(area);
-            } catch (NoSuchFieldException e) {
-                System.err.println(ASCIIColors.RED.getColor() +
-                        "The area " + area + " does not exist" +
-                        ASCIIColors.RESET.getColor());
             }
+        } catch (NoSuchFieldException e) {
+            throw new NoSuchFieldException("The area " + area + " does not exist" );
         }
         return areas;
     }
 
     public static LocalDate dateParser(String date) {
         date = date.replaceAll("/", "-")
-                .replaceAll("\s+", "");
+                .replaceAll("\\s+", "");
         return LocalDate.parse(date);
     }
 }
