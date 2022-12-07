@@ -19,11 +19,16 @@ public class HelperMethods {
                 field.setAccessible(true);
                 field.set(treatedArea, true);
             } catch (NoSuchFieldException e) {
-                System.err.println("The area " + area + " does not exist");
+                System.err.println(ASCIIColors.RED.getColor() +
+                        "The area " + area + " does not exist" +
+                        ASCIIColors.RESET.getColor());
             } catch (IllegalAccessException e) {
-                System.err.println("The area " + area + " is not accessible");
+                System.err.println(ASCIIColors.RED.getColor() +
+                        "The area " + area + " is not accessible" +
+                        ASCIIColors.RESET.getColor());
             }
         }
+        if (observations != null && observations.isBlank()) observations = null;
         treatedArea.setObservations(observations);
         return treatedArea;
     }
@@ -38,19 +43,14 @@ public class HelperMethods {
     public static List<String> getListOfValidTreatedAreaStrings(String[] areaStrings){
         List<String> areas = new ArrayList<>();
         for (String area : areaStrings) {
-            switch (area.toLowerCase()) {
-                case "cervical" -> areas.add(TreatedArea_.CERVICAL);
-                case "dorsal" -> areas.add(TreatedArea_.DORSAL);
-                case "lumbar" -> areas.add(TreatedArea_.LUMBAR);
-                case "sacroiliac" -> areas.add(TreatedArea_.SACROILIAC);
-                case "shoulder" -> areas.add(TreatedArea_.SHOULDER);
-                case "elbow" -> areas.add(TreatedArea_.ELBOW);
-                case "wrist" -> areas.add(TreatedArea_.WRIST);
-                case "hand" -> areas.add(TreatedArea_.HAND);
-                case "hip" -> areas.add(TreatedArea_.HIP);
-                case "knee" -> areas.add(TreatedArea_.KNEE);
-                case "ankle" -> areas.add(TreatedArea_.ANKLE);
-                case "foot" -> areas.add(TreatedArea_.FOOT);
+            try {
+                area = area.trim().toLowerCase();
+                TreatedArea.class.getDeclaredField(area);
+                areas.add(area);
+            } catch (NoSuchFieldException e) {
+                System.err.println(ASCIIColors.RED.getColor() +
+                        "The area " + area + " does not exist" +
+                        ASCIIColors.RESET.getColor());
             }
         }
         return areas;

@@ -10,10 +10,8 @@ import es.physiotherapy.persistence.dao.treatedarea.TreatedAreaDAOImpl;
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
 import es.physiotherapy.persistence.entity.TreatedArea;
-import es.physiotherapy.persistence.entity.TreatedArea_;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,7 +116,7 @@ public class PersonalDataService {
         return appointmentDAO.findAppointmentsBetweenDate(date1, date2);
     }
 
-    public List<Appointment> getAppointmentssByTreatedArea(String[] areasString) {
+    public List<Appointment> getAppointmentsByTreatedArea(String[] areasString) {
         List<String> areas = HelperMethods.getListOfValidTreatedAreaStrings(areasString);
         return (areas.size() > 0)
                 ? appointmentDAO.findAppointmentsByTreatedAreas(areas)

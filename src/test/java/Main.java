@@ -1,11 +1,7 @@
 import es.physiotherapy.persistence.Helpers.ASCIIColors;
-import es.physiotherapy.persistence.dao.appointment.AppointmentDAO;
-import es.physiotherapy.persistence.dao.appointment.AppointmentDAOImpl;
 import es.physiotherapy.persistence.entity.*;
 import es.physiotherapy.persistence.Helpers.HelperMethods;
 import es.physiotherapy.persistence.service.PersonalDataService;
-import jakarta.persistence.metamodel.SingularAttribute;
-import org.hibernate.metamodel.model.domain.internal.SingularAttributeImpl;
 
 import java.sql.Time;
 import java.time.LocalDate;
@@ -16,11 +12,7 @@ public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
 
     public static void main(String[] args) {
-        try {
-            getAppointmentsByTreatedAreas();
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage() + "\n");
-        }
+
     }
 
     private static void createAppointmentAndTreatedArea() {
@@ -57,7 +49,7 @@ public class Main {
 
     private static void getAppointmentsByTreatedAreas(){
         String[] areas = {"cervical", "lumbar"};
-        PDS.getAppointmentssByTreatedArea(areas)
+        PDS.getAppointmentsByTreatedArea(areas)
                 .forEach(a -> System.out.println(
                         ASCIIColors.GREEN.getColor() +
                                 a + ASCIIColors.RESET.getColor()));

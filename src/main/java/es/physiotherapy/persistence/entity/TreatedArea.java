@@ -138,25 +138,6 @@ public class TreatedArea {
         this.foot = foot;
     }
 
-    public void setTreatedAreas(List<String> areas){
-        for (String area : areas) {
-            switch (area.toLowerCase().trim()) {
-                case "cervical" -> setCervical(true);
-                case "dorsal" -> setDorsal(true);
-                case "lumbar" -> setLumbar(true);
-                case "sacroiliac" -> setSacroiliac(true);
-                case "shoulder" -> setShoulder(true);
-                case "elbow" -> setElbow(true);
-                case "wrist" -> setWrist(true);
-                case "hand" -> setHand(true);
-                case "hip" -> setHip(true);
-                case "knee" -> setKnee(true);
-                case "ankle" -> setAnkle(true);
-                case "foot" -> setFoot(true);
-            }
-        }
-    }
-
     public String getObservations() {
         return observations;
     }

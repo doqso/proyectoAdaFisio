@@ -23,7 +23,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         menuOptions();
         do {
-            System.out.println(ASCIIColors.BLUE.getColor() + "5. Print menu again");
+            System.out.println(ASCIIColors.YELLOW.getColor() + "5. Print menu again");
             System.out.println("0. Exit" + ASCIIColors.RESET.getColor() + "\n");
             System.out.print("Option -> ");
             try {
@@ -43,11 +43,12 @@ public class Main {
                     case 21 -> createAppointment(sc);
                     case 22 -> getAllAppointments();
                     case 23 -> getAppointmentsByClient(sc);
-                    case 24 -> getAllAppointmentsAfterDate(sc);
-                    case 25 -> getAllAppointmentsBeforeDate(sc);
-                    case 26 -> getAllAppointmentsBetweenDates(sc);
-                    case 27 -> updateAppointment(sc);
-                    case 28 -> deleteAppointment(sc);
+                    case 24 -> getAppointmentsAfterDate(sc);
+                    case 25 -> getAppointmentsBeforeDate(sc);
+                    case 26 -> getAppointmentsBetweenDates(sc);
+                    case 27 -> getAppointmentsByTreatedArea(sc);
+                    case 28 -> updateAppointment(sc);
+                    case 29 -> deleteAppointment(sc);
                     // Treated Areas
                     case 31 -> createTreatedArea(sc);
                     case 32 -> updateTreatedArea(sc);
@@ -68,6 +69,13 @@ public class Main {
         } while (opt != 0);
     }
 
+    private static void getAppointmentsByTreatedArea(Scanner sc) {
+        System.out.println("Enter treated areas (separated by spaces): ");
+        String[] description = sc.nextLine().split("\\s+");
+        List<Appointment> appointments = PDS.getAppointmentsByTreatedArea(description);
+        appointments.forEach(Main::printGreenText);
+    }
+
     private static void deleteTreatedArea(Scanner sc) {
         System.out.print("Treated Area ID -> ");
         long id = sc.nextLong();
@@ -84,18 +92,15 @@ public class Main {
         sc.nextLine();
         TreatedArea oldTreatedArea = PDS.getTreatedAreaById(id);
         if (oldTreatedArea == null) throw new RuntimeException("Treated Area not found");
-        TreatedArea newTreatedArea = new TreatedArea(oldTreatedArea.getAppointment());
-        newTreatedArea.setObservations(oldTreatedArea.getObservations());
         System.out.println("Enter treated areas (separated by space): ");
         String[] treatedAreaStrings = sc.nextLine().split("\\s+");
-        newTreatedArea.setTreatedAreas(List.of(treatedAreaStrings));
         System.out.println("Enter observations (optional): ");
         String observations = sc.nextLine().trim();
-        if (!observations.isBlank())
-            newTreatedArea.setObservations(observations);
-        else newTreatedArea.setObservations(oldTreatedArea.getObservations());
+        TreatedArea newTreatedArea = HelperMethods.treatedAreaBuilder(treatedAreaStrings, observations);
+        newTreatedArea.setAppointment(oldTreatedArea.getAppointment());
+        if (newTreatedArea.getObservations() == null) newTreatedArea.setObservations(oldTreatedArea.getObservations());
         PDS.updateTreatedArea(newTreatedArea);
-        printText("Treated Area updated successfully");
+        printGreenText("Treated Area updated successfully");
     }
 
     private static void createTreatedArea(Scanner sc) {
@@ -105,16 +110,14 @@ public class Main {
         sc.nextLine();
         Appointment appointment = PDS.getAppointmentById(id);
         if (appointment == null) throw new RuntimeException("Appointment not found");
-        TreatedArea treatedArea = new TreatedArea(appointment);
         System.out.print("Treated Areas (separated by space) -> ");
         String[] treatedAreaStrings = sc.nextLine().split("\\s+");
-        treatedArea.setTreatedAreas(List.of(treatedAreaStrings));
         System.out.print("Observations (optional) -> ");
         String observations = sc.nextLine().trim();
-        if (!observations.isBlank())
-            treatedArea.setObservations(observations);
+        TreatedArea treatedArea = HelperMethods.treatedAreaBuilder(treatedAreaStrings, observations);
+        treatedArea.setAppointment(appointment);
         PDS.createTreatedArea(treatedArea);
-        printText("Treated Area created successfully");
+        printGreenText("Treated Area created successfully");
     }
 
     private static void deleteAppointment(Scanner sc) {
@@ -124,7 +127,7 @@ public class Main {
         Appointment appointment = PDS.getAppointmentById(id);
         if (appointment == null) throw new RuntimeException("Appointment not found");
         PDS.deleteAppointment(appointment);
-        printText("Appointment deleted");
+        printGreenText("Appointment deleted");
     }
 
     private static void updateAppointment(Scanner sc) {
@@ -143,7 +146,7 @@ public class Main {
         appointment.setTime(time);
         appointment.setDuration(duration);
         PDS.updateAppointment(appointment);
-        printText("Appointment updated");
+        printGreenText("Appointment updated");
     }
 
     private static void deleteClient(Scanner sc) {
@@ -152,7 +155,7 @@ public class Main {
         Client client = PDS.getClientByDni(dni);
         if (client == null) throw new RuntimeException("Client not found");
         PDS.deleteClient(client);
-        printText("Client deleted");
+        printGreenText("Client deleted");
     }
 
     private static void updateClient(Scanner sc) {
@@ -179,7 +182,7 @@ public class Main {
         client.setAddress(address);
         client.setPhone(phone);
         PDS.updateClient(client);
-        printText("Client updated successfully");
+        printGreenText("Client updated successfully");
     }
 
     private static void getClientsBeforeBirthDate(Scanner sc) {
@@ -197,7 +200,7 @@ public class Main {
     private static void getClientsByCity(Scanner sc) {
         System.out.print("City -> ");
         String city = sc.nextLine();
-        PDS.getClientsByCity(city).forEach(Main::printText);
+        PDS.getClientsByCity(city).forEach(Main::printGreenText);
     }
 
     private static void getClientByDni(Scanner sc) {
@@ -205,41 +208,44 @@ public class Main {
         String dni = sc.nextLine();
         Client client = PDS.getClientByDni(dni);
         if (client == null) throw new RuntimeException("Client not found");
-        printText(client);
+        printGreenText(client);
     }
 
     private static void getAppointmentsByClient(Scanner sc) {
         System.out.print("Client DNI -> ");
         String dni = sc.nextLine();
-        PDS.getAppointmentsByDni(dni).forEach(Main::printText);
+        PDS.getAppointmentsByDni(dni).forEach(Main::printGreenText);
     }
 
-    private static void getAllAppointmentsBetweenDates(Scanner sc) {
+    private static void getAppointmentsBetweenDates(Scanner sc) {
         System.out.println("Enter the first date (yyyy-mm-dd): ");
         LocalDate date1 = HelperMethods.dateParser(sc.nextLine());
         System.out.println("Enter the second date (yyyy-mm-dd): ");
         LocalDate date2 = HelperMethods.dateParser(sc.nextLine());
-        PDS.getAppointmentsBetweenDates(date1, date2).forEach(Main::printText);
+        PDS.getAppointmentsBetweenDates(date1, date2)
+                .forEach(Main::printGreenText);
     }
 
-    private static void getAllAppointmentsBeforeDate(Scanner sc) {
+    private static void getAppointmentsBeforeDate(Scanner sc) {
         System.out.println("Enter the date (yyyy-mm-dd): ");
         String date = sc.nextLine();
-        PDS.getAppointmentsBeforeDate(HelperMethods.dateParser(date)).forEach(Main::printText);
+        PDS.getAppointmentsBeforeDate(HelperMethods.dateParser(date))
+                .forEach(Main::printGreenText);
     }
 
-    private static void getAllAppointmentsAfterDate(Scanner sc) {
+    private static void getAppointmentsAfterDate(Scanner sc) {
         System.out.println("Enter the date (yyyy-mm-dd): ");
         String date = sc.nextLine();
-        PDS.getAppointmentsAfterDate(HelperMethods.dateParser(date)).forEach(Main::printText);
+        PDS.getAppointmentsAfterDate(HelperMethods.dateParser(date))
+                .forEach(Main::printGreenText);
     }
 
     private static void getAllAppointments() {
-        PDS.getAllAppointments().forEach(Main::printText);
+        PDS.getAllAppointments().forEach(Main::printGreenText);
     }
 
     private static void getAllClients() {
-        PDS.getAllClients().forEach(Main::printText);
+        PDS.getAllClients().forEach(Main::printGreenText);
     }
 
     private static void createAppointment(Scanner sc) {
@@ -265,7 +271,7 @@ public class Main {
         appointment.setTreatedArea(treatedArea);
         treatedArea.setAppointment(appointment);
         PDS.createAppointment(appointment);
-        printText("Appointment created successfully!");
+        printGreenText("Appointment created successfully!");
     }
 
     private static void createClient(Scanner sc) {
@@ -285,26 +291,27 @@ public class Main {
         System.out.print("Enter the client's bitrh date (yyyy-mm-dd): ");
         client.setBirthDate(HelperMethods.dateParser(sc.nextLine()));
         PDS.createClient(client);
-        printText("Client created successfully!");
+        printGreenText("Client created successfully!");
     }
 
-    private static void printText(Object text) {
+    private static void printGreenText(Object text) {
         System.out.println(ASCIIColors.GREEN.getColor() +
                 text + ASCIIColors.RESET.getColor());
     }
 
     private static void menuOptions() {
         System.out.println();
-        System.out.println(ASCIIColors.BLUE.getColor() + "1 - Client Management\t\t\t\t\t" + "2 - Appointment Management");
+        System.out.println(ASCIIColors.YELLOW.getColor() + "1 - Client Management\t\t\t\t\t" + "2 - Appointment Management");
         System.out.println(ASCIIColors.CYAN.getColor() + "11. Create a new client\t\t\t\t\t" + "21. Create a new appointment");
         System.out.println("12. Get all clients\t\t\t\t\t\t" + "22. Get all appointments");
-        System.out.println("13. Get a client by DNI\t\t\t\t\t" + "23. Get all appointments of a client");
-        System.out.println("14. Get clients by city\t\t\t\t\t" + "24. Get all appointments after a date");
-        System.out.println("15. Get clients after birth date\t\t" + "25. Get all appointments before a date");
-        System.out.println("16. Get clients before birth date\t\t" + "26. Get all appointments between two dates");
-        System.out.println("17. Update a client\t\t\t\t\t\t" + "27. Update an appointment");
-        System.out.println("18. Delete a client\t\t\t\t\t\t" + "28. Delete an appointment");
-        System.out.println(ASCIIColors.BLUE.getColor() + "3 - Treatment area");
+        System.out.println("13. Get a client by DNI\t\t\t\t\t" + "23. Get appointments of a client");
+        System.out.println("14. Get clients by city\t\t\t\t\t" + "24. Get appointments after a date");
+        System.out.println("15. Get clients after birth date\t\t" + "25. Get appointments before a date");
+        System.out.println("16. Get clients before birth date\t\t" + "26. Get appointments between two dates");
+        System.out.println("17. Update a client\t\t\t\t\t\t" + "27. Get appointments by treated area");
+        System.out.println("18. Delete a client\t\t\t\t\t\t" + "28. Update an appointment");
+        System.out.println("\t".repeat(10) + "29. Delete an appointment");
+        System.out.println(ASCIIColors.YELLOW.getColor() + "3 - Treatment area");
         System.out.println(ASCIIColors.CYAN.getColor() + "31. Create treatment areas");
         System.out.println("32. Update a treatment area");
         System.out.println("33. Delete a treatment area" + ASCIIColors.RESET.getColor());
