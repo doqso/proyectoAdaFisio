@@ -1,0 +1,13 @@
+[
+  {
+    "client": {
+      "dni": "12345678",
+      "name": "Juan Perez",
+      "surname": "Perez",
+      "phone": "123456789",
+      "address": "Av. Siempreviva 742",
+      "city": "Springfield",
+      "birthDate": "1990-01-01"
+    }
+  }
+]

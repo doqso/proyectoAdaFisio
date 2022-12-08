@@ -1,6 +1,5 @@
 package es.physiotherapy.persistence.util;
 
-import es.physiotherapy.persistence.entity.Client;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -19,7 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class XMLMethods {
+public class XMLWritter {
     private static Document documentBuilder() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
@@ -31,9 +30,8 @@ public class XMLMethods {
         return builder.newDocument();
     }
 
-    public static <T> void createXmlFile(T[] entities) throws IOException {
-        if (entities.length == 0) return;
-        var entityClass = entities[0].getClass();
+    public static <T> void createXmlFile(T[] entities, String filename) throws IOException {
+        Class<?> entityClass = entities[0].getClass();
         Document doc = documentBuilder();
         String className = entityClass.getSimpleName().toLowerCase();
         Element rootElement = doc.createElement(className + "s");
@@ -45,24 +43,23 @@ public class XMLMethods {
                         || fieldType.equals("TreatedArea")
                         || fieldType.equals("Appointment")
                         || fieldType.equals("List")) continue;
+                String classProperty = field.getName();
                 field.setAccessible(true);
-                String fileName = field.getName();
-                String value = null;
+                String objectValue = null;
                 try {
-                    value = field.get(entity).toString();
+                    objectValue = field.get(entity).toString();
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException("Error getting field value", e);
                 } catch (NullPointerException ignored) {
                 }
-                Element element = doc.createElement(fileName);
-                element.setTextContent(value);
+                Element element = doc.createElement(classProperty);
+                element.setTextContent(objectValue);
                 entityElement.appendChild(element);
             }
             rootElement.appendChild(entityElement);
         }
         doc.appendChild(rootElement);
-        String fileName = className + "s.xml";
-        saveXmlFile(doc, fileName);
+        saveXmlFile(doc, filename + ".xml");
     }
 
     private static void saveXmlFile(Document doc, String fileName) throws IOException {
@@ -81,7 +78,7 @@ public class XMLMethods {
             StreamResult result = new StreamResult(writer);
             transformer.transform(source, result);
         } catch (TransformerException e) {
-            throw new RuntimeException("Error transforming document", e);
+            throw new RuntimeException("Error transforming document to create XML", e);
         }
     }
 }

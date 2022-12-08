@@ -4,10 +4,12 @@ import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.service.PersonalDataService;
 import es.physiotherapy.persistence.util.ASCIIColors;
 import es.physiotherapy.persistence.util.HelperMethods;
-import es.physiotherapy.persistence.util.XMLMethods;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,8 +19,35 @@ public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
 
     public static void main(String[] args) throws IOException {
-        Object d = new Client();
-        System.out.println(d.getClass());
+        readJson(Client.class, "cosis");
+    }
+
+    private static <T> void readJson(Class<T> entityClass, String filename) {
+        String source = "input/" + filename + ".json";
+        JSONArray jsonArray = new JSONObject(source).getJSONArray(entityClass.getSimpleName().toLowerCase());
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            for (Field field : entityClass.getDeclaredFields()) {
+                T objectToBuild = null;
+                try {
+                    objectToBuild = entityClass.getDeclaredConstructor().newInstance();
+                } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
+                         NoSuchMethodException e) {
+                    throw new RuntimeException("Error creating object from JSON file", e);
+                }
+                field.setAccessible(true);
+                try {
+                    field.set(objectToBuild, jsonObject.get(field.getName()));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Error setting field value " + field.getName(), e);
+                }
+                try {
+                    System.out.println(field.get(objectToBuild));
+                } catch (IllegalAccessException e) {
+                    System.err.println("Error getting field value " + field.getName());
+                }
+            }
+        }
     }
 
     private static <T> void testingGenericMethods(T[] entities) {
