@@ -109,7 +109,7 @@ public class Appointment {
         return ASCIIColors.GREEN.getColor() +
                 "Appointment\t\t" + ASCIIColors.PURPLE.getColor() + "Nº" + id + "\n" +
                 ASCIIColors.BLUE.getColor() + "client" + "\t\tdate" + "\t\t\ttime" + "\t\t\tduration\n" +
-                ASCIIColors.RESET.getColor() + client.getDni() + "\t" + date + "\t\t" + time + "\t\t" + duration + "\n" +
+                ASCIIColors.RESET.getColor() + (client != null ? client.getDni() : null) + "\t" + date + "\t\t" + time + "\t\t" + duration + "\n" +
                 (treatedArea != null ? treatedArea + "\n" : "") + "-".repeat(50);
     }
 }

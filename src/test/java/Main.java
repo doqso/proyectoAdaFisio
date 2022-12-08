@@ -5,49 +5,68 @@ import es.physiotherapy.persistence.service.PersonalDataService;
 import es.physiotherapy.persistence.util.ASCIIColors;
 import es.physiotherapy.persistence.util.HelperMethods;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
 
     public static void main(String[] args) throws IOException {
-        readJson(Client.class, "cosis");
+        String filename = "appointment";
+        List<Appointment> list = readJson(Appointment.class, filename);
+        for (Appointment o : list) {
+            System.out.println(o);
+        }
     }
 
-    private static <T> void readJson(Class<T> entityClass, String filename) {
-        String source = "input/" + filename + ".json";
-        JSONArray jsonArray = new JSONObject(source).getJSONArray(entityClass.getSimpleName().toLowerCase());
+    private static <T> List<T> readJson(Class<T> entityClass, String filename) throws IOException {
+        Path source = Paths.get("./input/" + filename + ".json").normalize();
+        JSONArray jsonArray = new JSONArray(Files.readString(source));
+        List<T> entities = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            JSONObject jsonObject = jsonArray.getJSONObject(i).getJSONObject(entityClass.getSimpleName().toLowerCase());
+            T objectInBuild = null;
+            try {
+                objectInBuild = entityClass.getDeclaredConstructor().newInstance();
+                entities.add(objectInBuild);
+            } catch (InvocationTargetException | InstantiationException
+                     | IllegalAccessException | NoSuchMethodException e) {
+                throw new RuntimeException("Error creating object from JSON file", e);
+            }
             for (Field field : entityClass.getDeclaredFields()) {
-                T objectToBuild = null;
-                try {
-                    objectToBuild = entityClass.getDeclaredConstructor().newInstance();
-                } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
-                         NoSuchMethodException e) {
-                    throw new RuntimeException("Error creating object from JSON file", e);
-                }
                 field.setAccessible(true);
                 try {
-                    field.set(objectToBuild, jsonObject.get(field.getName()));
+                    // TODO: terminar de implementar el casteo de los tipos de datos
+                    Class<?> objectType = field.getType();
+                    Object value = null;
+                    switch (objectType.getSimpleName()) {
+                        case "LocalDate" -> value = LocalDate.parse(jsonObject.getString(field.getName()));
+                        case "Time" -> value = Time.valueOf(LocalTime.parse(jsonObject.getString(field.getName())));
+                        case "Integer" -> value = jsonObject.getInt(field.getName());
+                        case "Long" -> value = jsonObject.getLong(field.getName());
+                        case "String" -> value = objectType.cast(jsonObject.get(field.getName()));
+                    }
+                    field.set(objectInBuild, value);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException("Error setting field value " + field.getName(), e);
-                }
-                try {
-                    System.out.println(field.get(objectToBuild));
-                } catch (IllegalAccessException e) {
-                    System.err.println("Error getting field value " + field.getName());
+                } catch (JSONException e){
+                    System.out.println(ASCIIColors.RED.getColor() + "Error reading field " + field.getName() + ASCIIColors.RESET.getColor());
                 }
             }
         }
+        return entities;
     }
 
     private static <T> void testingGenericMethods(T[] entities) {
