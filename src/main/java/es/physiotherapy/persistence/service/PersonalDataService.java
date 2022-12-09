@@ -1,6 +1,5 @@
 package es.physiotherapy.persistence.service;
 
-import es.physiotherapy.persistence.util.HelperMethods;
 import es.physiotherapy.persistence.dao.appointment.AppointmentDAO;
 import es.physiotherapy.persistence.dao.appointment.AppointmentDAOImpl;
 import es.physiotherapy.persistence.dao.client.ClientDAO;
@@ -10,6 +9,7 @@ import es.physiotherapy.persistence.dao.treatedarea.TreatedAreaDAOImpl;
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
 import es.physiotherapy.persistence.entity.TreatedArea;
+import es.physiotherapy.persistence.util.HelperMethods;
 import es.physiotherapy.persistence.util.XMLWritter;
 
 import java.io.IOException;
@@ -125,6 +125,11 @@ public class PersonalDataService {
     public void writeXmlFile(List<Object> list, String fileName) throws IOException {
         if (list == null || list.size() == 0 || fileName == null || fileName.trim().isBlank())
             throw new IllegalArgumentException("Invalid arguments");
-//        XMLWritter.createXmlFile(list.toArray(), fileName);
+        switch (list.get(0).getClass().getSimpleName()) {
+            case "Client" ->
+                    XMLWritter.createClientXmlFile(list.toArray(), fileName);
+            case "Appointment" ->
+                    XMLWritter.createAppointmentXmlFile(list.toArray(), fileName);
+        }
     }
 }

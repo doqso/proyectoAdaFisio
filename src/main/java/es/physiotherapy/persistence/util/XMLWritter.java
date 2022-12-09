@@ -20,7 +20,6 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 public class XMLWritter {
     private static Document documentBuilder() {
@@ -69,10 +68,11 @@ public class XMLWritter {
     }
      */
 
-    public static void createClientXmlFile(List<Client> clients, String filename) throws IOException {
+    public static void createClientXmlFile(Object[] clients, String filename) throws IOException {
         Document doc = documentBuilder();
         Element rootElement = doc.createElement("clients");
-        for (Client client : clients) {
+        for (Object object : clients) {
+            Client client = (Client) object;
             Element clientElement = doc.createElement("client");
             clientElement.setAttribute("dni", client.getDni());
             clientElement.setIdAttribute("dni", true);
@@ -97,16 +97,16 @@ public class XMLWritter {
         saveXmlFile(doc, filename + ".xml");
     }
 
-    public static void createAppointmentXmlFile(List<Appointment> appointments, String filename) throws IOException {
+    public static void createAppointmentXmlFile(Object[] appointments, String filename) throws IOException {
         Document doc = documentBuilder();
         Element rootElement = doc.createElement("appointments");
-        for (Appointment appointment : appointments) {
+        for (Object object : appointments) {
+            Appointment appointment = (Appointment) object;
             Element appointmentElement = doc.createElement("appointment");
             appointmentElement.setAttribute("id", appointment.getId().toString());
             appointmentElement.setIdAttribute("id", true);
-            Element clientElement = doc.createElement("client");
-            clientElement.setAttribute("dni", appointment.getClient().getDni());
-            clientElement.setIdAttribute("dni", true);
+            Element clientElement = doc.createElement("client_dni");
+            clientElement.setTextContent(appointment.getClient().getDni());
             appointmentElement.appendChild(clientElement);
             Element dateElement = doc.createElement("date");
             dateElement.setTextContent(appointment.getDate().toString());
@@ -128,7 +128,6 @@ public class XMLWritter {
 
     private static void createTreatedAreaXml(Element parentElement, TreatedArea treatedArea) {
         Document doc = parentElement.getOwnerDocument();
-        Element treatedAreaElement = doc.createElement("treatedArea");
         for (Field field : TreatedArea.class.getDeclaredFields()) {
             if (field.getType() == Appointment.class) continue;
             String fieldName = field.getName();
@@ -136,14 +135,14 @@ public class XMLWritter {
             try {
                 Object fieldValue = field.get(treatedArea);
                 Element element = doc.createElement(fieldName);
-                element.setTextContent(fieldValue.toString());
-                treatedAreaElement.appendChild(element);
+                String textContent = (fieldValue != null) ? fieldValue.toString() : null;
+                element.setTextContent(textContent);
+                parentElement.appendChild(element);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Error getting field value of " +
                         fieldName + " from TreatedArea", e);
             }
         }
-        parentElement.appendChild(treatedAreaElement);
     }
 
     private static void saveXmlFile(Document doc, String fileName) throws IOException {
