@@ -7,7 +7,7 @@
     </Appenders>
     <Loggers>
         <!-- All < DEBUG < INFO < WARN < ERROR < FATAL < OFF -->
-        <Root level="WARN">
+        <Root level="ERROR">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

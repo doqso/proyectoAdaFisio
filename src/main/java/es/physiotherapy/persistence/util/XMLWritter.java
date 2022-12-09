@@ -1,5 +1,8 @@
 package es.physiotherapy.persistence.util;
 
+import es.physiotherapy.persistence.entity.Appointment;
+import es.physiotherapy.persistence.entity.Client;
+import es.physiotherapy.persistence.entity.TreatedArea;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -17,6 +20,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class XMLWritter {
     private static Document documentBuilder() {
@@ -30,6 +34,8 @@ public class XMLWritter {
         return builder.newDocument();
     }
 
+    /*
+    // Experimental generic method
     public static <T> void createXmlFile(T[] entities, String filename) throws IOException {
         Class<?> entityClass = entities[0].getClass();
         Document doc = documentBuilder();
@@ -60,6 +66,84 @@ public class XMLWritter {
         }
         doc.appendChild(rootElement);
         saveXmlFile(doc, filename + ".xml");
+    }
+     */
+
+    public static void createClientXmlFile(List<Client> clients, String filename) throws IOException {
+        Document doc = documentBuilder();
+        Element rootElement = doc.createElement("clients");
+        for (Client client : clients) {
+            Element clientElement = doc.createElement("client");
+            clientElement.setAttribute("dni", client.getDni());
+            clientElement.setIdAttribute("dni", true);
+            Element nameElement = doc.createElement("name");
+            nameElement.setTextContent(client.getName());
+            clientElement.appendChild(nameElement);
+            Element surnameElement = doc.createElement("surname");
+            surnameElement.setTextContent(client.getSurname());
+            clientElement.appendChild(surnameElement);
+            Element phoneElement = doc.createElement("phone");
+            phoneElement.setTextContent(client.getPhone());
+            clientElement.appendChild(phoneElement);
+            Element cityElement = doc.createElement("city");
+            cityElement.setTextContent(client.getCity());
+            clientElement.appendChild(cityElement);
+            Element birthDateElement = doc.createElement("birthDate");
+            birthDateElement.setTextContent(client.getBirthDate().toString());
+            clientElement.appendChild(birthDateElement);
+            rootElement.appendChild(clientElement);
+        }
+        doc.appendChild(rootElement);
+        saveXmlFile(doc, filename + ".xml");
+    }
+
+    public static void createAppointmentXmlFile(List<Appointment> appointments, String filename) throws IOException {
+        Document doc = documentBuilder();
+        Element rootElement = doc.createElement("appointments");
+        for (Appointment appointment : appointments) {
+            Element appointmentElement = doc.createElement("appointment");
+            appointmentElement.setAttribute("id", appointment.getId().toString());
+            appointmentElement.setIdAttribute("id", true);
+            Element clientElement = doc.createElement("client");
+            clientElement.setAttribute("dni", appointment.getClient().getDni());
+            clientElement.setIdAttribute("dni", true);
+            appointmentElement.appendChild(clientElement);
+            Element dateElement = doc.createElement("date");
+            dateElement.setTextContent(appointment.getDate().toString());
+            appointmentElement.appendChild(dateElement);
+            Element timeElement = doc.createElement("time");
+            timeElement.setTextContent(appointment.getTime().toString());
+            appointmentElement.appendChild(timeElement);
+            Element durationElement = doc.createElement("duration");
+            durationElement.setTextContent(appointment.getDuration().toString());
+            appointmentElement.appendChild(durationElement);
+            Element treatedAreaElement = doc.createElement("treatedArea");
+            createTreatedAreaXml(treatedAreaElement, appointment.getTreatedArea());
+            appointmentElement.appendChild(treatedAreaElement);
+            rootElement.appendChild(appointmentElement);
+        }
+        doc.appendChild(rootElement);
+        saveXmlFile(doc, filename + ".xml");
+    }
+
+    private static void createTreatedAreaXml(Element parentElement, TreatedArea treatedArea) {
+        Document doc = parentElement.getOwnerDocument();
+        Element treatedAreaElement = doc.createElement("treatedArea");
+        for (Field field : TreatedArea.class.getDeclaredFields()) {
+            if (field.getType() == Appointment.class) continue;
+            String fieldName = field.getName();
+            field.setAccessible(true);
+            try {
+                Object fieldValue = field.get(treatedArea);
+                Element element = doc.createElement(fieldName);
+                element.setTextContent(fieldValue.toString());
+                treatedAreaElement.appendChild(element);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Error getting field value of " +
+                        fieldName + " from TreatedArea", e);
+            }
+        }
+        parentElement.appendChild(treatedAreaElement);
     }
 
     private static void saveXmlFile(Document doc, String fileName) throws IOException {

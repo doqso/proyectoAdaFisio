@@ -7,6 +7,8 @@ import es.physiotherapy.persistence.util.HelperMethods;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -24,10 +26,27 @@ public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
 
     public static void main(String[] args) throws IOException {
-        String filename = "appointment";
-        List<Appointment> list = readJson(Appointment.class, filename);
-        for (Appointment o : list) {
-            System.out.println(o);
+        TreatedArea treatedArea = new TreatedArea();
+        treatedArea.setCervical(true);
+        treatedArea.setDorsal(true);
+        treatedArea.setLumbar(true);
+        treatedArea.setObservations("Observations about treated area");
+        createTreatedAreaXml(treatedArea);
+    }
+
+    private static void createTreatedAreaXml(TreatedArea treatedArea) {
+        for (Field field : TreatedArea.class.getDeclaredFields()) {
+            Class<?> fieldClass = field.getType();
+            if (fieldClass == Appointment.class) continue;
+            String fieldName = field.getName();
+            Object fieldValue = null;
+            field.setAccessible(true);
+            try {
+                fieldValue = field.get(treatedArea);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Error getting field value", e);
+            }
+            System.out.println(fieldName + ": " + fieldValue);
         }
     }
 
@@ -67,26 +86,6 @@ public class Main {
             }
         }
         return entities;
-    }
-
-    private static <T> void testingGenericMethods(T[] entities) {
-        if (entities.length == 0) return;
-        var entityClass = entities[0].getClass();
-        // get field values
-        for (T entity : entities) {
-            for (Field f : entityClass.getDeclaredFields()) {
-                f.setAccessible(true);
-                String fieldType = f.getType().getSimpleName();
-                if (fieldType.equals("Client") || fieldType.equals("TreatedArea")
-                        || fieldType.equals("Appointment")
-                        || fieldType.equals("List")) continue;
-                try {
-                    System.out.println(f.getName() + ": " + f.get(entity));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     private static void createAppointmentAndTreatedArea() {

@@ -10,7 +10,9 @@ import es.physiotherapy.persistence.dao.treatedarea.TreatedAreaDAOImpl;
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
 import es.physiotherapy.persistence.entity.TreatedArea;
+import es.physiotherapy.persistence.util.XMLWritter;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -118,5 +120,11 @@ public class PersonalDataService {
         return (areas.size() > 0)
                 ? appointmentDAO.findAppointmentsByTreatedAreas(areas)
                 : null;
+    }
+
+    public void writeXmlFile(List<Object> list, String fileName) throws IOException {
+        if (list == null || list.size() == 0 || fileName == null || fileName.trim().isBlank())
+            throw new IllegalArgumentException("Invalid arguments");
+//        XMLWritter.createXmlFile(list.toArray(), fileName);
     }
 }

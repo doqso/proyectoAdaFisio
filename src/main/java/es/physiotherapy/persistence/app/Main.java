@@ -1,20 +1,23 @@
 package es.physiotherapy.persistence.app;
 
-import es.physiotherapy.persistence.util.ASCIIColors;
-import es.physiotherapy.persistence.util.HelperMethods;
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
 import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.service.PersonalDataService;
+import es.physiotherapy.persistence.util.ASCIIColors;
+import es.physiotherapy.persistence.util.HelperMethods;
 
+import java.io.IOException;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
+    private static List<Object> objectsToPrint = null;
 
     public static void main(String[] args) {
         System.out.println("Hello Physio Appointment Management!");
@@ -24,6 +27,7 @@ public class Main {
         menuOptions();
         do {
             System.out.println(ASCIIColors.YELLOW.getColor() + "5. Print menu again");
+            System.out.println("6. Write last 'GET' query to XML file");
             System.out.println("0. Exit" + ASCIIColors.RESET.getColor() + "\n");
             System.out.print("Option -> ");
             try {
@@ -55,6 +59,7 @@ public class Main {
                     case 33 -> deleteTreatedArea(sc);
                     // Menu
                     case 5 -> menuOptions();
+                    case 6 -> writeXmlFile(sc);
                     case 0 -> System.out.println("Bye!");
                     default -> System.out.println(ASCIIColors.RED.getColor()
                             + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
@@ -70,11 +75,20 @@ public class Main {
         } while (opt != 0);
     }
 
+
+    private static void writeXmlFile(Scanner cs) throws IOException {
+        System.out.println("Write the filename");
+        String fileName = cs.nextLine();
+        PDS.writeXmlFile(objectsToPrint, fileName);
+
+    }
+
     private static void getAppointmentsByTreatedArea(Scanner sc) throws NoSuchFieldException {
         System.out.println("Enter treated areas (separated by spaces): ");
         String[] description = sc.nextLine().split("\\s+");
         List<Appointment> appointments = PDS.getAppointmentsByTreatedArea(description);
         appointments.forEach(Main::printGreenText);
+        objectsToPrint = Arrays.asList(appointments.toArray());
     }
 
     private static void deleteTreatedArea(Scanner sc) {
@@ -189,19 +203,25 @@ public class Main {
     private static void getClientsBeforeBirthDate(Scanner sc) {
         System.out.print("Birth date (dd/mm/yyyy) -> ");
         LocalDate date = HelperMethods.dateParser(sc.nextLine());
-        PDS.getClientsBeforeBirthDate(date).forEach(System.out::println);
+        List<Client> clients = PDS.getClientsBeforeBirthDate(date);
+        clients.forEach(System.out::println);
+        objectsToPrint = Arrays.asList(clients.toArray());
     }
 
     private static void getClientsAfterBirthDate(Scanner sc) {
         System.out.print("Birth date (dd/mm/yyyy) -> ");
         LocalDate date = HelperMethods.dateParser(sc.nextLine());
-        PDS.getClientsAfterBirthDate(date).forEach(System.out::println);
+        List<Client> clients = PDS.getClientsAfterBirthDate(date);
+        clients.forEach(System.out::println);
+        objectsToPrint = Arrays.asList(clients.toArray());
     }
 
     private static void getClientsByCity(Scanner sc) {
         System.out.print("City -> ");
         String city = sc.nextLine();
-        PDS.getClientsByCity(city).forEach(Main::printGreenText);
+        List<Client> clients = PDS.getClientsByCity(city);
+        clients.forEach(Main::printGreenText);
+        objectsToPrint = Arrays.asList(clients.toArray());
     }
 
     private static void getClientByDni(Scanner sc) {
@@ -210,12 +230,15 @@ public class Main {
         Client client = PDS.getClientByDni(dni);
         if (client == null) throw new RuntimeException("Client not found");
         printGreenText(client);
+        objectsToPrint = List.of(client);
     }
 
     private static void getAppointmentsByClient(Scanner sc) {
         System.out.print("Client DNI -> ");
         String dni = sc.nextLine();
-        PDS.getAppointmentsByDni(dni).forEach(Main::printGreenText);
+        List<Appointment> appointments = PDS.getAppointmentsByDni(dni);
+        appointments.forEach(Main::printGreenText);
+        objectsToPrint = Arrays.asList(appointments.toArray());
     }
 
     private static void getAppointmentsBetweenDates(Scanner sc) {
@@ -223,30 +246,37 @@ public class Main {
         LocalDate date1 = HelperMethods.dateParser(sc.nextLine());
         System.out.println("Enter the second date (yyyy-mm-dd): ");
         LocalDate date2 = HelperMethods.dateParser(sc.nextLine());
-        PDS.getAppointmentsBetweenDates(date1, date2)
-                .forEach(Main::printGreenText);
+        List<Appointment> appointments = PDS.getAppointmentsBetweenDates(date1, date2);
+        appointments.forEach(Main::printGreenText);
+        objectsToPrint = Arrays.asList(appointments.toArray());
     }
 
     private static void getAppointmentsBeforeDate(Scanner sc) {
         System.out.println("Enter the date (yyyy-mm-dd): ");
         String date = sc.nextLine();
-        PDS.getAppointmentsBeforeDate(HelperMethods.dateParser(date))
-                .forEach(Main::printGreenText);
+        List<Appointment> appointments = PDS.getAppointmentsBeforeDate(HelperMethods.dateParser(date));
+        appointments.forEach(Main::printGreenText);
+        objectsToPrint = Arrays.asList(appointments.toArray());
     }
 
     private static void getAppointmentsAfterDate(Scanner sc) {
         System.out.println("Enter the date (yyyy-mm-dd): ");
         String date = sc.nextLine();
-        PDS.getAppointmentsAfterDate(HelperMethods.dateParser(date))
-                .forEach(Main::printGreenText);
+        List<Appointment> appointments = PDS.getAppointmentsAfterDate(HelperMethods.dateParser(date));
+        appointments.forEach(Main::printGreenText);
+        objectsToPrint = Arrays.asList(appointments.toArray());
     }
 
     private static void getAllAppointments() {
-        PDS.getAllAppointments().forEach(Main::printGreenText);
+        List<Appointment> appointments = PDS.getAllAppointments();
+        appointments.forEach(Main::printGreenText);
+        objectsToPrint = Arrays.asList(appointments.toArray());
     }
 
     private static void getAllClients() {
-        PDS.getAllClients().forEach(Main::printGreenText);
+        List<Client> clients = PDS.getAllClients();
+        clients.forEach(Main::printGreenText);
+        objectsToPrint = Arrays.asList(clients.toArray());
     }
 
     private static void createAppointment(Scanner sc) {
