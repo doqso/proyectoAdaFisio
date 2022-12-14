@@ -1,6 +1,6 @@
-[
-  {
-    "client": {
+{
+  "clients": [
+    {
       "dni": "12345678",
       "name": "Juan Perez",
       "surname": "Perez",
@@ -9,5 +9,5 @@
       "city": "Springfield",
       "birthDate": "1990-01-01"
     }
-  }
-]
+  ]
+}

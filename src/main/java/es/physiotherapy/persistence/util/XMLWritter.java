@@ -22,6 +22,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class XMLWritter {
+    public static final String OUTPUT_DIR = "output/";
+
     private static Document documentBuilder() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
@@ -94,7 +96,7 @@ public class XMLWritter {
             rootElement.appendChild(clientElement);
         }
         doc.appendChild(rootElement);
-        saveXmlFile(doc, filename + ".xml");
+        saveXmlFile(doc, filename);
     }
 
     public static void createAppointmentXmlFile(Object[] appointments, String filename) throws IOException {
@@ -123,26 +125,28 @@ public class XMLWritter {
             rootElement.appendChild(appointmentElement);
         }
         doc.appendChild(rootElement);
-        saveXmlFile(doc, filename + ".xml");
+        saveXmlFile(doc, filename);
     }
 
     private static void createTreatedAreaXml(Element parentElement, TreatedArea treatedArea) {
         Document doc = parentElement.getOwnerDocument();
         for (Field field : TreatedArea.class.getDeclaredFields()) {
-            if (field.getType() == Appointment.class) continue;
+            String fieldType = field.getType().getSimpleName();
+            if (fieldType.equals("Appointment")) continue;
             String fieldName = field.getName();
             field.setAccessible(true);
             try {
-                Object fieldValue = field.get(treatedArea);
+                String fieldValue = String.valueOf(field.get(treatedArea));
+                if (fieldType.equals("boolean") && !Boolean.parseBoolean(fieldValue)) continue;
                 Element element = doc.createElement(fieldName);
-                String textContent = (fieldValue != null) ? fieldValue.toString() : null;
-                element.setTextContent(textContent);
+                if (!fieldType.equals("boolean")) element.setTextContent(fieldValue);
                 parentElement.appendChild(element);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Error getting field value of " +
                         fieldName + " from TreatedArea", e);
             }
         }
+
     }
 
     private static void saveXmlFile(Document doc, String fileName) throws IOException {
@@ -153,10 +157,9 @@ public class XMLWritter {
         } catch (TransformerConfigurationException e) {
             throw new RuntimeException("Error creating transformer", e);
         }
-        String path = "output";
-        Path dir = Paths.get(path);
+        Path dir = Paths.get(OUTPUT_DIR);
         if (!Files.exists(dir)) Files.createDirectory(dir);
-        try (FileOutputStream writer = new FileOutputStream(path + "/" + fileName)) {
+        try (FileOutputStream writer = new FileOutputStream(OUTPUT_DIR + fileName)) {
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(writer);
             transformer.transform(source, result);

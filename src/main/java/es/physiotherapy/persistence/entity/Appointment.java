@@ -110,6 +110,6 @@ public class Appointment {
                 "Appointment\t\t" + ASCIIColors.PURPLE.getColor() + "Nº" + id + "\n" +
                 ASCIIColors.BLUE.getColor() + "client" + "\t\tdate" + "\t\t\ttime" + "\t\t\tduration\n" +
                 ASCIIColors.RESET.getColor() + (client != null ? client.getDni() : null) + "\t" + date + "\t\t" + time + "\t\t" + duration + "\n" +
-                (treatedArea != null ? treatedArea + "\n" : "") + "-".repeat(50);
+                (treatedArea != null ? treatedArea + "\n" : "") + "-".repeat(50) + "\n";
     }
 }

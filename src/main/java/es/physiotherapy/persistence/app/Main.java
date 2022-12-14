@@ -6,14 +6,14 @@ import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.service.PersonalDataService;
 import es.physiotherapy.persistence.util.ASCIIColors;
 import es.physiotherapy.persistence.util.HelperMethods;
+import es.physiotherapy.persistence.util.JSONReader;
+import es.physiotherapy.persistence.util.XMLWritter;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.sql.Time;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
@@ -27,7 +27,6 @@ public class Main {
         menuOptions();
         do {
             System.out.println(ASCIIColors.YELLOW.getColor() + "5. Print menu again");
-            System.out.println("6. Write last 'GET' query to XML file");
             System.out.println("0. Exit" + ASCIIColors.RESET.getColor() + "\n");
             System.out.print("Option -> ");
             try {
@@ -57,9 +56,11 @@ public class Main {
                     case 31 -> createTreatedArea(sc);
                     case 32 -> updateTreatedArea(sc);
                     case 33 -> deleteTreatedArea(sc);
+                    // XML and JSON
+                    case 41 -> writeXmlFile(sc);
+                    case 42 -> readJsonFile(sc);
                     // Menu
                     case 5 -> menuOptions();
-                    case 6 -> writeXmlFile(sc);
                     case 0 -> System.out.println("Bye!");
                     default -> System.out.println(ASCIIColors.RED.getColor()
                             + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
@@ -75,12 +76,29 @@ public class Main {
         } while (opt != 0);
     }
 
+    public static void readJsonFile(Scanner sc) throws IOException, NoSuchFieldException, IllegalAccessException {
+        System.out.println("-- Input path is: " + Paths.get(JSONReader.INPUT_DIR).toAbsolutePath() + " --");
+        System.out.print("(1. Client, 2. Appointment) -> ");
+        byte opt = sc.nextByte();
+        sc.nextLine();
+        System.out.print("Input file name -> ");
+        String fileName = sc.nextLine();
+
+        List<Object> objects = new ArrayList<>();
+        switch (opt) {
+            case 1 -> objects = Collections.singletonList(PDS.readJsonFile(fileName, Client.class));
+            case 2 -> objects = Collections.singletonList(PDS.readJsonFile(fileName, Appointment.class));
+            default -> System.out.println(ASCIIColors.RED.getColor()
+                    + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
+        }
+        objects.forEach(System.out::println);
+    }
 
     private static void writeXmlFile(Scanner cs) throws IOException {
+        System.out.println("-- Output path is: " + Paths.get(XMLWritter.OUTPUT_DIR).toAbsolutePath() + " --");
         System.out.println("Write the filename");
         String fileName = cs.nextLine();
         PDS.writeXmlFile(objectsToPrint, fileName);
-
     }
 
     private static void getAppointmentsByTreatedArea(Scanner sc) throws NoSuchFieldException {
@@ -341,10 +359,10 @@ public class Main {
         System.out.println("16. Get clients before birth date\t\t" + "26. Get appointments between two dates");
         System.out.println("17. Update a client\t\t\t\t\t\t" + "27. Get appointments by treated area");
         System.out.println("18. Delete a client\t\t\t\t\t\t" + "28. Update an appointment");
-        System.out.println("\t".repeat(10) + "29. Delete an appointment");
-        System.out.println(ASCIIColors.YELLOW.getColor() + "3 - Treatment area");
-        System.out.println(ASCIIColors.CYAN.getColor() + "31. Create treatment areas");
-        System.out.println("32. Update a treatment area");
+        System.out.println("\t".repeat(10) + "29. Delete an appointment\n");
+        System.out.println(ASCIIColors.YELLOW.getColor() + "3 - Treatment area\t\t\t\t\t\t" + "4. I/O Management");
+        System.out.println(ASCIIColors.CYAN.getColor() + "31. Create treatment areas \t\t\t\t" + "41. Write last 'GET' query to XML file");
+        System.out.println("32. Update a treatment area \t\t\t" + "42. Read object from JSON file");
         System.out.println("33. Delete a treatment area" + ASCIIColors.RESET.getColor());
     }
 }

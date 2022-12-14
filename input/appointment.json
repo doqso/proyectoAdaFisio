@@ -1,10 +1,38 @@
-[
-  {
-    "appointment": {
-      "id": 1,
-      "date": "2019-01-01",
-      "time": "10:00:00",
-      "duration": 60
+{
+  "appointments": [
+    {
+      "client_dni": "12345678A",
+      "date": "2018-11-01",
+      "time": "12:20:00",
+      "duration": 35,
+      "treatedArea": {
+        "areas": [
+          "cervical",
+          "dorsal",
+          "sacroiliac",
+          "wrist",
+          "hip",
+          "foot"
+        ],
+        "observations": "columna muy jodida"
+      }
+    },
+    {
+      "client_dni": "87654321B",
+      "date": "2017-06-02",
+      "time": "09:50:00",
+      "duration": 35,
+      "treatedArea": {
+        "areas": [
+          "cervical",
+          "lumbar",
+          "shoulder",
+          "hand",
+          "hip",
+          "foot"
+        ],
+        "observations": ""
+      }
     }
-  }
-]
+  ]
+}

@@ -10,10 +10,12 @@ import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
 import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.util.HelperMethods;
+import es.physiotherapy.persistence.util.JSONReader;
 import es.physiotherapy.persistence.util.XMLWritter;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,12 +126,25 @@ public class PersonalDataService {
 
     public void writeXmlFile(List<Object> list, String fileName) throws IOException {
         if (list == null || list.size() == 0 || fileName == null || fileName.trim().isBlank())
-            throw new IllegalArgumentException("Invalid arguments");
+            throw new IllegalArgumentException("File name or list is null or empty");
+        fileName = fileName.trim();
+        if (!fileName.endsWith(".xml")) fileName += ".xml";
         switch (list.get(0).getClass().getSimpleName()) {
-            case "Client" ->
-                    XMLWritter.createClientXmlFile(list.toArray(), fileName);
-            case "Appointment" ->
-                    XMLWritter.createAppointmentXmlFile(list.toArray(), fileName);
+            case "Client" -> XMLWritter.createClientXmlFile(list.toArray(), fileName);
+            case "Appointment" -> XMLWritter.createAppointmentXmlFile(list.toArray(), fileName);
         }
+    }
+
+    public <T> List<T> readJsonFile(String fileName, Class<T> type) throws IOException, IllegalAccessException, NoSuchFieldException {
+        if (fileName == null || fileName.trim().isBlank())
+            throw new IllegalArgumentException("File name is null or empty");
+        fileName = fileName.trim();
+        if (!fileName.endsWith(".json")) fileName += ".json";
+        List<T> list = new ArrayList<>();
+        switch (type.getSimpleName()) {
+            case "Client" -> list = (List<T>) JSONReader.getClientsFromJsonFile(fileName);
+            case "Appointment" -> list = (List<T>) JSONReader.getAppointmentsFromJsonFile(fileName);
+        }
+        return list;
     }
 }
