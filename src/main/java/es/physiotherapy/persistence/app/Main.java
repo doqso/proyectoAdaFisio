@@ -13,11 +13,13 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
     private static List<Object> objectsToPrint = null;
+    private static Object lastDeletedObject = null;
 
     public static void main(String[] args) {
         System.out.println("Hello Physio Appointment Management!");
@@ -33,7 +35,7 @@ public class Main {
                 opt = sc.nextByte();
                 sc.nextLine();
                 switch (opt) {
-                    // Clients
+                    // 1. Clients
                     case 11 -> createClient(sc);
                     case 12 -> getAllClients();
                     case 13 -> getClientByDni(sc);
@@ -42,7 +44,7 @@ public class Main {
                     case 16 -> getClientsBeforeBirthDate(sc);
                     case 17 -> updateClient(sc);
                     case 18 -> deleteClient(sc);
-                    // Appointments
+                    // 2. Appointments
                     case 21 -> createAppointment(sc);
                     case 22 -> getAllAppointments();
                     case 23 -> getAppointmentsByClient(sc);
@@ -52,13 +54,14 @@ public class Main {
                     case 27 -> getAppointmentsByTreatedArea(sc);
                     case 28 -> updateAppointment(sc);
                     case 29 -> deleteAppointment(sc);
-                    // Treated Areas
+                    // 3. Treated Areas
                     case 31 -> createTreatedArea(sc);
                     case 32 -> updateTreatedArea(sc);
                     case 33 -> deleteTreatedArea(sc);
-                    // XML and JSON
+                    // 4. I/O
                     case 41 -> writeXmlFile(sc);
                     case 42 -> readJsonFile(sc);
+                    case 43 -> recoverLastDeletedObject();
                     // Menu
                     case 5 -> menuOptions();
                     case 0 -> System.out.println("Bye!");
@@ -76,12 +79,23 @@ public class Main {
         } while (opt != 0);
     }
 
+    private static void recoverLastDeletedObject() {
+        if (lastDeletedObject == null) throw new RuntimeException("No item to recover");
+        switch (lastDeletedObject.getClass().getSimpleName()) {
+            case "Client" -> PDS.createClient((Client) lastDeletedObject);
+            case "Appointment" -> PDS.createAppointment((Appointment) lastDeletedObject);
+            case "TreatedArea" -> PDS.createTreatedArea((TreatedArea) lastDeletedObject);
+        }
+        printGreenText("Object recovered");
+        lastDeletedObject = null;
+    }
+
     public static void readJsonFile(Scanner sc) throws IOException, NoSuchFieldException, IllegalAccessException {
-        System.out.println("-- Input path is: " + Paths.get(JSONReader.INPUT_DIR).toAbsolutePath() + " --");
+        System.out.println("-- Input path: " + Paths.get(JSONReader.INPUT_DIR).toAbsolutePath() + " --");
         System.out.print("(1. Client, 2. Appointment) -> ");
         byte opt = sc.nextByte();
         sc.nextLine();
-        System.out.print("Input file name -> ");
+        System.out.print("File name -> ");
         String fileName = sc.nextLine();
 
         List<Object> objects = new ArrayList<>();
@@ -95,8 +109,8 @@ public class Main {
     }
 
     private static void writeXmlFile(Scanner cs) throws IOException {
-        System.out.println("-- Output path is: " + Paths.get(XMLWritter.OUTPUT_DIR).toAbsolutePath() + " --");
-        System.out.println("Write the filename");
+        System.out.println("-- Output path: " + Paths.get(XMLWritter.OUTPUT_DIR).toAbsolutePath() + " --");
+        System.out.println("File name -> ");
         String fileName = cs.nextLine();
         PDS.writeXmlFile(objectsToPrint, fileName);
     }
@@ -117,6 +131,8 @@ public class Main {
         if (appointment == null) throw new RuntimeException("Treated area not found");
         TreatedArea treatedArea = new TreatedArea(appointment);
         PDS.deleteTreatedArea(treatedArea);
+        printGreenText("Treated area deleted");
+        lastDeletedObject = treatedArea;
     }
 
     private static void updateTreatedArea(Scanner sc) {
@@ -161,6 +177,7 @@ public class Main {
         if (appointment == null) throw new RuntimeException("Appointment not found");
         PDS.deleteAppointment(appointment);
         printGreenText("Appointment deleted");
+        lastDeletedObject = appointment;
     }
 
     private static void updateAppointment(Scanner sc) {
@@ -189,6 +206,7 @@ public class Main {
         if (client == null) throw new RuntimeException("Client not found");
         PDS.deleteClient(client);
         printGreenText("Client deleted");
+        lastDeletedObject = client;
     }
 
     private static void updateClient(Scanner sc) {
@@ -311,7 +329,7 @@ public class Main {
         System.out.println("Enter the duration (in minutes) ");
         appointment.setDuration(sc.nextInt());
         sc.nextLine();
-        System.out.println("Enter the areas to treat with (separated by space) ");
+        System.out.println("Enter the areas to treat with (separated by space ex: cervical hand) ");
         String[] areas = sc.nextLine().split("\\s+");
         System.out.println("Enter any aditional notes (optional) ");
         String notes = sc.nextLine().trim();
@@ -339,6 +357,7 @@ public class Main {
         client.setCity(sc.nextLine());
         System.out.print("Enter the client's bitrh date (yyyy-mm-dd): ");
         client.setBirthDate(HelperMethods.dateParser(sc.nextLine()));
+
         PDS.createClient(client);
         printGreenText("Client created successfully!");
     }
@@ -363,6 +382,6 @@ public class Main {
         System.out.println(ASCIIColors.YELLOW.getColor() + "3 - Treatment area\t\t\t\t\t\t" + "4. I/O Management");
         System.out.println(ASCIIColors.CYAN.getColor() + "31. Create treatment areas \t\t\t\t" + "41. Write last 'GET' query to XML file");
         System.out.println("32. Update a treatment area \t\t\t" + "42. Read object from JSON file");
-        System.out.println("33. Delete a treatment area" + ASCIIColors.RESET.getColor());
+        System.out.println("33. Delete a treatment area \t\t\t" + "43. Recover las deleted item" + ASCIIColors.RESET.getColor());
     }
 }

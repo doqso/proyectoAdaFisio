@@ -9,7 +9,7 @@ import java.util.Objects;
 @Table(name = "treated_area")
 public class TreatedArea {
     @Id
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
     private boolean cervical;

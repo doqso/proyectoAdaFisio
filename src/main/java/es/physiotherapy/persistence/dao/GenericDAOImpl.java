@@ -7,7 +7,6 @@ import org.hibernate.Transaction;
 import java.util.Optional;
 
 /**
- *
  * @param <T> Entity
  * @param <R> Type of the primary key
  */

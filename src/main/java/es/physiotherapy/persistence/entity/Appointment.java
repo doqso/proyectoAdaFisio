@@ -16,7 +16,7 @@ public class Appointment {
     private LocalDate date;
     private Time time;
     private Integer duration;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "dni")
     private Client client;
     @OneToOne(mappedBy = TreatedArea_.APPOINTMENT,

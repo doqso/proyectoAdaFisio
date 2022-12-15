@@ -1,13 +1,12 @@
 package es.physiotherapy.persistence.dao.client;
 
 import es.physiotherapy.persistence.dao.GenericDAOImpl;
-import es.physiotherapy.persistence.entity.*;
+import es.physiotherapy.persistence.entity.Client;
+import es.physiotherapy.persistence.entity.Client_;
 import es.physiotherapy.persistence.util.HibernateUtil;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.SingularAttribute;
 import org.hibernate.Session;
 
 import java.time.LocalDate;
