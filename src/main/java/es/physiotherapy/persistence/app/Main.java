@@ -8,12 +8,12 @@ import es.physiotherapy.persistence.util.ASCIIColors;
 import es.physiotherapy.persistence.util.HelperMethods;
 import es.physiotherapy.persistence.util.JSONReader;
 import es.physiotherapy.persistence.util.XMLWritter;
+import jakarta.persistence.PersistenceException;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 
 public class Main {
@@ -72,6 +72,9 @@ public class Main {
                 System.out.println(ASCIIColors.RED.getColor()
                         + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
                 sc.nextLine();
+            } catch (PersistenceException e) {
+                System.out.println(ASCIIColors.RED.getColor()
+                        + "Persistence error: Cannot apply changes to database" + ASCIIColors.RESET.getColor() + "\n");
             } catch (Exception e) {
                 System.out.println(ASCIIColors.RED.getColor() +
                         "Error: " + e.getMessage() + "\n");
@@ -98,14 +101,23 @@ public class Main {
         System.out.print("File name -> ");
         String fileName = sc.nextLine();
 
-        List<Object> objects = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
         switch (opt) {
-            case 1 -> objects = Collections.singletonList(PDS.readJsonFile(fileName, Client.class));
-            case 2 -> objects = Collections.singletonList(PDS.readJsonFile(fileName, Appointment.class));
+            case 1 -> list.addAll(PDS.readJsonFile(fileName, Client.class));
+            case 2 -> list.addAll(PDS.readJsonFile(fileName, Appointment.class));
             default -> System.out.println(ASCIIColors.RED.getColor()
                     + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
         }
-        objects.forEach(System.out::println);
+        list.forEach(System.out::println);
+        System.out.println("Add to database? (y/n)");
+        if (!sc.nextLine().equalsIgnoreCase("y")) return;
+        String objectType = list.get(0).getClass().getSimpleName();
+        switch (objectType) {
+            case "Client" -> list.forEach(o -> PDS.createClient((Client) o));
+            case "Appointment" -> list.forEach(o -> PDS.createAppointment((Appointment) o));
+            default -> throw new RuntimeException("Objects could not be added to database");
+        }
+        printGreenText("Objects added to database");
     }
 
     private static void writeXmlFile(Scanner cs) throws IOException {

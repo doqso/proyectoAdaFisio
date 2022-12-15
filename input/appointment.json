@@ -1,7 +1,7 @@
 {
   "appointments": [
     {
-      "client_dni": "12345678A",
+      "client_dni": "12345678",
       "date": "2018-11-01",
       "time": "12:20:00",
       "duration": 35,
@@ -18,7 +18,7 @@
       }
     },
     {
-      "client_dni": "87654321B",
+      "client_dni": "josana",
       "date": "2017-06-02",
       "time": "09:50:00",
       "duration": 35,
