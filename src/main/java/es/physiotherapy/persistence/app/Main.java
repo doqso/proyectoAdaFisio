@@ -71,22 +71,35 @@ public class Main {
     }
 
     private static void menuOptions() {
+        // 1. Clients           2. Appointments
         System.out.print(ASCIIColors.YELLOW.getColor());
         System.out.println("1 - Clients" + "\t".repeat(8) + "2 - Appointments");
         System.out.print(ASCIIColors.CYAN.getColor());
-        System.out.println("11. Create a new client" + "\t".repeat(5) + "21. Create a new appointment");
-        System.out.println("12. Get all clients" + "\t".repeat(6) + "22. Get all appointments");
-        System.out.println("13. Get a client by DNI" + "\t".repeat(5) + "23. Get appointments by ID");
-        System.out.println("14. Get clients by city" + "\t".repeat(5) + "24. Get appointments by client DNI");
-        System.out.println("15. Get clients after birth date" + "\t".repeat(2) + "25. Get appointments after date");
-        System.out.println("16. Get clients before birth date" + "\t".repeat(2) + "26. Get appointments before date");
-        System.out.println("17. Update a client" + "\t12".repeat(6) + "27. Update an appointment");
-        System.out.println("18. Delete a client" + "\t".repeat(6) + "28. Delete an appointment");
+        System.out.print("11. Create a new client");
+        System.out.println("\t".repeat(5) + "21. Create a new appointment");
+        System.out.print("12. Get all clients");
+        System.out.println("\t".repeat(6) + "22. Get all appointments");
+        System.out.print("13. Get a client by DNI");
+        System.out.println("\t".repeat(5) + "23. Get appointments by ID");
+        System.out.print("14. Get clients by city");
+        System.out.println("\t".repeat(5) + "24. Get appointments by client DNI");
+        System.out.print("15. Get clients after birth date");
+        System.out.println("\t".repeat(2) + "25. Get appointments after date");
+        System.out.print("16. Get clients before birth date");
+        System.out.println("\t".repeat(2) + "26. Get appointments before date");
+        System.out.print("17. Update a client");
+        System.out.println("\t".repeat(6) + "27. Update an appointment");
+        System.out.print("18. Delete a client");
+        System.out.println("\t".repeat(6) + "28. Delete an appointment");
+        // 3. Treated Areas     4. I/O
         System.out.print(ASCIIColors.YELLOW.getColor());
         System.out.println("3 - Treatment area" + "\t".repeat(6) + "4. I/O Management");
         System.out.print(ASCIIColors.CYAN.getColor());
-        System.out.println("31. Create treatment areas" + "\t".repeat(4) + "41. Write last 'GET' query to XML file");
-        System.out.println("32. Update a treatment area" + "\t".repeat(4) + "42. Read object from JSON file");
-        System.out.println("33. Delete a treatment area" + "\t".repeat(4) + "43. Recover las deleted item" + ASCIIColors.RESET.getColor());
+        System.out.print("31. Create treatment areas");
+        System.out.println("\t".repeat(4) + "41. Write last 'GET' query to XML file");
+        System.out.print("32. Update a treatment area");
+        System.out.println("\t".repeat(4) + "42. Read object from JSON file");
+        System.out.print("33. Delete a treatment area");
+        System.out.println("\t".repeat(4) + "43. Recover las deleted item" + ASCIIColors.RESET.getColor());
     }
 }
