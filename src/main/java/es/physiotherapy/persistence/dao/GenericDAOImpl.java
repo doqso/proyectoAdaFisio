@@ -4,6 +4,7 @@ import es.physiotherapy.persistence.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,6 +28,25 @@ public class GenericDAOImpl<T, R> implements GenericDao<T, R> {
                 session.flush();
                 tx.commit();
                 return entity;
+            } catch (Exception e) {
+                if (tx != null) tx.rollback();
+                throw e;
+            }
+        }
+    }
+
+    @Override
+    public List<T> create(List<T> entities) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx = null;
+            try {
+                tx = session.beginTransaction();
+                for (T entity : entities) {
+                    session.persist(entity);
+                }
+                session.flush();
+                tx.commit();
+                return entities;
             } catch (Exception e) {
                 if (tx != null) tx.rollback();
                 throw e;

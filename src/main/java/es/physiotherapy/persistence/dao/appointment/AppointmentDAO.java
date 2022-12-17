@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AppointmentDAO extends GenericDao<Appointment, Long> {
-    Appointment findAppointmentById(Long id);
 
     List<Appointment> findAppointmentByDni(String dni);
 
@@ -17,5 +16,4 @@ public interface AppointmentDAO extends GenericDao<Appointment, Long> {
 
     List<Appointment> findAppointmentsByTreatedAreas(List<String> area);
 
-    List<Appointment> findAppointmentsBetweenDateByClient(String dni, LocalDate initDate, LocalDate endDate);
 }

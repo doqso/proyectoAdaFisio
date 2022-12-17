@@ -129,6 +129,7 @@ public class XMLWritter {
     }
 
     private static void createTreatedAreaXml(Element parentElement, TreatedArea treatedArea) {
+        if (treatedArea == null) return;
         Document doc = parentElement.getOwnerDocument();
         for (Field field : TreatedArea.class.getDeclaredFields()) {
             String fieldType = field.getType().getSimpleName();

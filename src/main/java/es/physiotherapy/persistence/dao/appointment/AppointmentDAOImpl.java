@@ -18,18 +18,6 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
     }
 
     @Override
-    public Appointment findAppointmentById(Long id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<Appointment> criteria = builder.createQuery(Appointment.class);
-            Root<Appointment> root = criteria.from(Appointment.class);
-
-            criteria.where(builder.equal(root.get(Appointment_.id), id));
-            return session.createQuery(criteria).getSingleResultOrNull();
-        }
-    }
-
-    @Override
     public List<Appointment> findAppointmentByDni(String dni) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
@@ -80,10 +68,5 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
             criteria.where(predicate);
             return session.createQuery(criteria).getResultList();
         }
-    }
-
-    @Override
-    public List<Appointment> findAppointmentsBetweenDateByClient(String dni, LocalDate initDate, LocalDate endDate) {
-        return null;
     }
 }
