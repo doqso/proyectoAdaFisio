@@ -2,6 +2,7 @@ package es.physiotherapy.persistence.util;
 
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
+import es.physiotherapy.persistence.entity.Tool;
 import es.physiotherapy.persistence.entity.TreatedArea;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,6 +21,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 public class XMLWritter {
     public static final String OUTPUT_DIR = "output/";
@@ -77,7 +79,6 @@ public class XMLWritter {
             Client client = (Client) object;
             Element clientElement = doc.createElement("client");
             clientElement.setAttribute("dni", client.getDni());
-            clientElement.setIdAttribute("dni", true);
             Element nameElement = doc.createElement("name");
             nameElement.setTextContent(client.getName());
             clientElement.appendChild(nameElement);
@@ -105,8 +106,7 @@ public class XMLWritter {
         for (Object object : appointments) {
             Appointment appointment = (Appointment) object;
             Element appointmentElement = doc.createElement("appointment");
-            appointmentElement.setAttribute("id", appointment.getId().toString());
-            appointmentElement.setIdAttribute("id", true);
+            appointmentElement.setAttribute("id", String.valueOf(appointment.getId()));
             Element clientElement = doc.createElement("client_dni");
             clientElement.setTextContent(appointment.getClient().getDni());
             appointmentElement.appendChild(clientElement);
@@ -120,7 +120,7 @@ public class XMLWritter {
             durationElement.setTextContent(appointment.getDuration().toString());
             appointmentElement.appendChild(durationElement);
             Element treatedAreaElement = doc.createElement("treatedArea");
-            createTreatedAreaXml(treatedAreaElement, appointment.getTreatedArea());
+            buildTreatedAreaXml(treatedAreaElement, appointment.getTreatedArea());
             appointmentElement.appendChild(treatedAreaElement);
             rootElement.appendChild(appointmentElement);
         }
@@ -128,7 +128,7 @@ public class XMLWritter {
         saveXmlFile(doc, filename);
     }
 
-    private static void createTreatedAreaXml(Element parentElement, TreatedArea treatedArea) {
+    private static void buildTreatedAreaXml(Element parentElement, TreatedArea treatedArea) {
         if (treatedArea == null) return;
         Document doc = parentElement.getOwnerDocument();
         for (Field field : TreatedArea.class.getDeclaredFields()) {
@@ -147,12 +147,30 @@ public class XMLWritter {
                         fieldName + " from TreatedArea", e);
             }
         }
+    }
 
+    public static void createToolXmlFile(Object[] tools, String filename) throws IOException {
+        Document doc = documentBuilder();
+        Element rootElement = doc.createElement("tools");
+        for (Object object : tools) {
+            Tool tool = (Tool) object;
+            Element toolElement = doc.createElement("tool");
+            toolElement.setAttribute("id", String.valueOf(tool.getId()));
+            Element nameElement = doc.createElement("name");
+            nameElement.setTextContent(tool.getName());
+            toolElement.appendChild(nameElement);
+            Element stockElement = doc.createElement("stock");
+            stockElement.setTextContent(tool.getStock().toString());
+            toolElement.appendChild(stockElement);
+            rootElement.appendChild(toolElement);
+        }
+        doc.appendChild(rootElement);
+        saveXmlFile(doc, filename);
     }
 
     private static void saveXmlFile(Document doc, String fileName) throws IOException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = null;
+        Transformer transformer;
         try {
             transformer = transformerFactory.newTransformer();
         } catch (TransformerConfigurationException e) {

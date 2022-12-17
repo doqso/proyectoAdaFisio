@@ -17,7 +17,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         menuOptions();
         do {
-            System.out.println(ASCIIColors.YELLOW.getColor() + "5. Print menu again");
+            System.out.println(ASCIIColors.YELLOW.getColor() + "6. Print menu again");
             System.out.println("0. Exit" + ASCIIColors.RESET.getColor());
             System.out.print("Option -> ");
             try {
@@ -50,8 +50,14 @@ public class Main {
                     case 41 -> PDS.writeXmlFile(sc);
                     case 42 -> PDS.readJsonFile(sc);
                     case 43 -> PDS.recoverLastDeletedObject();
+                    // 5. Tools
+                    case 51 -> PDS.createTool(sc);
+                    case 52 -> PDS.getAllTools();
+                    case 53 -> PDS.getToolById(sc);
+                    case 54 -> PDS.getToolsByAppointmentId(sc);
+                    case 55 -> PDS.deleteTool(sc);
                     // Menu
-                    case 5 -> menuOptions();
+                    case 6 -> menuOptions();
                     case 0 -> System.out.println("Bye!");
                     default -> System.out.println(ASCIIColors.RED.getColor()
                             + "Invalid option" + ASCIIColors.RESET.getColor() + "\n");
@@ -75,8 +81,8 @@ public class Main {
         System.out.print(ASCIIColors.YELLOW.getColor());
         System.out.println("1 - Clients" + "\t".repeat(8) + "2 - Appointments");
         System.out.print(ASCIIColors.CYAN.getColor());
-        System.out.print("11. Create a new client");
-        System.out.println("\t".repeat(5) + "21. Create a new appointment");
+        System.out.print("11. Add a new client");
+        System.out.println("\t".repeat(5) + "21. Add a new appointment");
         System.out.print("12. Get all clients");
         System.out.println("\t".repeat(6) + "22. Get all appointments");
         System.out.print("13. Get a client by DNI");
@@ -95,11 +101,21 @@ public class Main {
         System.out.print(ASCIIColors.YELLOW.getColor());
         System.out.println("3 - Treatment area" + "\t".repeat(6) + "4. I/O Management");
         System.out.print(ASCIIColors.CYAN.getColor());
-        System.out.print("31. Create treatment areas");
+        System.out.print("31. Add a new treated areas");
         System.out.println("\t".repeat(4) + "41. Write last 'GET' query to XML file");
         System.out.print("32. Update a treatment area");
         System.out.println("\t".repeat(4) + "42. Read object from JSON file");
         System.out.print("33. Delete a treatment area");
-        System.out.println("\t".repeat(4) + "43. Recover las deleted item" + ASCIIColors.RESET.getColor());
+        System.out.println("\t".repeat(4) + "43. Recover las deleted item");
+        // Tools
+        System.out.print(ASCIIColors.YELLOW.getColor());
+        System.out.println("5. Tools");
+        System.out.print(ASCIIColors.CYAN.getColor());
+        System.out.println("51. Add a new tool");
+        System.out.println("52. Get all tools");
+        System.out.println("53. Get a tool by ID");
+        System.out.println("54. Get tools by appointment ID");
+        System.out.println("55. Delete tool");
+        System.out.println(ASCIIColors.RESET.getColor());
     }
 }

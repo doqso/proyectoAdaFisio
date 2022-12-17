@@ -2,6 +2,7 @@ package es.physiotherapy.persistence.util;
 
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
+import es.physiotherapy.persistence.entity.Tool;
 import es.physiotherapy.persistence.entity.TreatedArea;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,6 +47,25 @@ public class JSONReader {
             appointments.add(appointment);
         }
         return appointments;
+    }
+
+    public static List<Tool> getToolsFromJsonFile(String filename){
+        String jsonString = null;
+        try {
+            jsonString = Files.readString(Paths.get(INPUT_DIR + filename));
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot read file " + filename, e);
+        }
+        JSONArray jsonObject = new JSONObject(jsonString).getJSONArray("tools");
+        List<Tool> tools = new ArrayList<>();
+        for (int i = 0; i < jsonObject.length(); i++) {
+            JSONObject toolJson = jsonObject.getJSONObject(i);
+            Tool tool = new Tool();
+            tool.setName(toolJson.getString("name"));
+            tool.setStock(toolJson.getInt("stock"));
+            tools.add(tool);
+        }
+        return tools;
     }
 
     public static List<Client> getClientsFromJsonFile(String filename) throws IllegalAccessException {

@@ -12,5 +12,6 @@
         <mapping class="es.physiotherapy.persistence.entity.Client"/>
         <mapping class="es.physiotherapy.persistence.entity.Appointment"/>
         <mapping class="es.physiotherapy.persistence.entity.TreatedArea"/>
+        <mapping class="es.physiotherapy.persistence.entity.Tool"/>
     </session-factory>
 </hibernate-configuration>

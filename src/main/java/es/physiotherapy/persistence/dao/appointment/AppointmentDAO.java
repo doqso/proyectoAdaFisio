@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface AppointmentDAO extends GenericDao<Appointment, Long> {
 
-    List<Appointment> findAppointmentByDni(String dni);
+    List<Appointment> findByDni(String dni);
 
-    List<Appointment> findAllAppointments();
+    List<Appointment> findAll();
 
-    List<Appointment> findAppointmentsBetweenDate(LocalDate initDate, LocalDate endDate);
+    List<Appointment> findBetweenDate(LocalDate initDate, LocalDate endDate);
 }

@@ -3,9 +3,10 @@ package es.physiotherapy.persistence.dao.appointment;
 import es.physiotherapy.persistence.dao.GenericDAOImpl;
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Appointment_;
-import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.util.HibernateUtil;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -18,7 +19,7 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
     }
 
     @Override
-    public List<Appointment> findAppointmentByDni(String dni) {
+    public List<Appointment> findByDni(String dni) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Appointment> query = session.createQuery("from Appointment where client.dni = :dni", Appointment.class);
             query.setParameter("dni", dni);
@@ -27,7 +28,7 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
     }
 
     @Override
-    public List<Appointment> findAllAppointments() {
+    public List<Appointment> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Appointment> criteria = builder.createQuery(Appointment.class);
@@ -38,7 +39,7 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
     }
 
     @Override
-    public List<Appointment> findAppointmentsBetweenDate(LocalDate initDate, LocalDate endDate) {
+    public List<Appointment> findBetweenDate(LocalDate initDate, LocalDate endDate) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Appointment> criteria = builder.createQuery(Appointment.class);

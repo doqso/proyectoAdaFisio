@@ -1,0 +1,8 @@
+{
+  "tools": [
+    {
+      "name": "my costumized tool",
+      "stock": 10
+    }
+  ]
+}

@@ -7,9 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ClientDAO extends GenericDao<Client, String> {
-    List<Client> findClientsByCity(String city);
+    List<Client> findByCity(String city);
 
-    List<Client> findClientsBetweenBirthDate(LocalDate initDate, LocalDate endDate);
+    List<Client> findByBirthDateBetweenDates(LocalDate initDate, LocalDate endDate);
 
-    List<Client> findAllClients();
+    List<Client> findAll();
 }

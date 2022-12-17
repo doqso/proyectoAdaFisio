@@ -135,6 +135,7 @@ public class Client {
                 ASCIIColors.BLUE.getColor() + "phone" + "\t\t\t\taddress" + "\n" +
                 ASCIIColors.RESET.getColor() + phone + "\t\t\t" + address + "\n" +
                 ASCIIColors.BLUE.getColor() + "birthDate" + "\t\t\tcity" + "\n" +
-                ASCIIColors.RESET.getColor() + birthDate + "\t\t\t" + city + "\n" + "-".repeat(50) + "\n";
+                ASCIIColors.RESET.getColor() + birthDate + "\t\t\t" + city + "\n" +
+                "-".repeat(50) + "\n";
     }
 }

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,9 +22,13 @@ public class Appointment {
     @JoinColumn(name = "dni")
     private Client client;
     @OneToOne(mappedBy = TreatedArea_.APPOINTMENT,
-            fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private TreatedArea treatedArea;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "appointment_use_tool",
+            joinColumns = @JoinColumn(name = "appointment_id"),
+            inverseJoinColumns = @JoinColumn(name = "tool_id"))
+    private List<Tool> tools = new ArrayList<>();
 
     public Appointment() {
     }

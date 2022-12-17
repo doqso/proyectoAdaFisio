@@ -16,7 +16,7 @@ public class TreatedAreaDAOImpl extends GenericDAOImpl<TreatedArea, Long> implem
     }
 
     @Override
-    public List<TreatedArea> findAllTreatedAreas() {
+    public List<TreatedArea> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<TreatedArea> criteria = builder.createQuery(TreatedArea.class);

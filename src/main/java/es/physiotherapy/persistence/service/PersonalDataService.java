@@ -4,10 +4,13 @@ import es.physiotherapy.persistence.dao.appointment.AppointmentDAO;
 import es.physiotherapy.persistence.dao.appointment.AppointmentDAOImpl;
 import es.physiotherapy.persistence.dao.client.ClientDAO;
 import es.physiotherapy.persistence.dao.client.ClientDAOImpl;
+import es.physiotherapy.persistence.dao.tool.ToolDAO;
+import es.physiotherapy.persistence.dao.tool.ToolDAOImpl;
 import es.physiotherapy.persistence.dao.treatedarea.TreatedAreaDAO;
 import es.physiotherapy.persistence.dao.treatedarea.TreatedAreaDAOImpl;
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Client;
+import es.physiotherapy.persistence.entity.Tool;
 import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.util.ASCIIColors;
 import es.physiotherapy.persistence.util.HelperMethods;
@@ -19,7 +22,6 @@ import java.nio.file.Paths;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,6 +29,7 @@ public class PersonalDataService {
     private final ClientDAO clientDAO;
     private final AppointmentDAO appointmentDAO;
     private final TreatedAreaDAO treatedAreaDAO;
+    private final ToolDAO toolDAO;
     List<Object> objectsToPrint = null;
     private Object lastDeletedObject = null;
 
@@ -34,6 +37,51 @@ public class PersonalDataService {
         this.clientDAO = new ClientDAOImpl();
         this.appointmentDAO = new AppointmentDAOImpl();
         this.treatedAreaDAO = new TreatedAreaDAOImpl();
+        this.toolDAO = new ToolDAOImpl();
+    }
+
+    public void getAllTools() {
+        objectsToPrint = new ArrayList<>(toolDAO.findAll());
+        objectsToPrint.forEach(System.out::println);
+    }
+
+    public void getToolById(Scanner sc) {
+        System.out.print("ID -> ");
+        long id = sc.nextLong();
+        sc.nextLine();
+        Tool tool = toolDAO.findById(id).orElse(null);
+        if (tool == null) throw new IllegalArgumentException("There is no tool with that id");
+        System.out.println(tool);
+        objectsToPrint = List.of(tool);
+    }
+
+    public void getToolsByAppointmentId(Scanner sc) {
+        System.out.print("Appointment ID -> ");
+        long id = sc.nextLong();
+        sc.nextLine();
+        objectsToPrint = List.copyOf(toolDAO.findByAppointment(id));
+        if (objectsToPrint.isEmpty()) System.out.println("No tools found for appointment with id " + id);
+        objectsToPrint.forEach(System.out::println);
+    }
+
+    public void createTool(Scanner sc) {
+        System.out.print("Name -> ");
+        String name = sc.nextLine();
+        System.out.print("stock -> ");
+        int stock = sc.nextInt();
+        sc.nextLine();
+        Tool tool = toolDAO.create(new Tool(name, stock));
+        System.out.println("Tool created with id " + tool.getId());
+    }
+
+    public void deleteTool(Scanner sc) {
+        System.out.println("Introduce the id of the tool you want to delete");
+        long id = sc.nextLong();
+        sc.nextLine();
+        Tool tool = toolDAO.findById(id).orElse(null);
+        if (tool == null) throw new IllegalArgumentException("No tool with id " + id + " found");
+        toolDAO.delete(tool);
+        System.out.println("Tool with id " + id + " deleted");
     }
 
     public void createClient(Scanner sc) {
@@ -198,33 +246,29 @@ public class PersonalDataService {
         System.out.print("City -> ");
         String city = sc.nextLine();
         if (city == null || city.isBlank()) throw new IllegalArgumentException("City cannot be null");
-        List<Client> clients = clientDAO.findClientsByCity(city);
-        clients.forEach(System.out::println);
-        objectsToPrint = Arrays.asList(clients.toArray());
+        objectsToPrint = List.copyOf(clientDAO.findByCity(city));
+        objectsToPrint.forEach(System.out::println);
     }
 
     public void getClientsAfterBirthDate(Scanner sc) {
         System.out.print("Birth date (dd/mm/yyyy) -> ");
         LocalDate date = HelperMethods.dateParser(sc.nextLine());
         if (date == null) throw new IllegalArgumentException("Date cannot be null");
-        List<Client> clients = clientDAO.findClientsBetweenBirthDate(date, LocalDate.now());
-        clients.forEach(System.out::println);
-        objectsToPrint = Arrays.asList(clients.toArray());
+        objectsToPrint = List.copyOf(clientDAO.findByBirthDateBetweenDates(date, LocalDate.now()));
+        objectsToPrint.forEach(System.out::println);
     }
 
     public void getClientsBeforeBirthDate(Scanner sc) {
         System.out.print("Birth date (dd/mm/yyyy) -> ");
         LocalDate date = HelperMethods.dateParser(sc.nextLine());
         if (date == null) throw new IllegalArgumentException("Date cannot be null");
-        List<Client> clients = clientDAO.findClientsBetweenBirthDate(LocalDate.MIN, date);
-        clients.forEach(System.out::println);
-        objectsToPrint = Arrays.asList(clients.toArray());
+        objectsToPrint = List.copyOf(clientDAO.findByBirthDateBetweenDates(LocalDate.MIN, date));
+        objectsToPrint.forEach(System.out::println);
     }
 
     public void getAllClients() {
-        List<Client> clients = clientDAO.findAllClients();
-        clients.forEach(System.out::println);
-        objectsToPrint = Arrays.asList(clients.toArray());
+        objectsToPrint = List.copyOf(clientDAO.findAll());
+        objectsToPrint.forEach(System.out::println);
     }
 
     public void getClientByDni(Scanner sc) {
@@ -238,9 +282,8 @@ public class PersonalDataService {
     }
 
     public void getAllAppointments() {
-        List<Appointment> appointments = appointmentDAO.findAllAppointments();
-        appointments.forEach(System.out::println);
-        objectsToPrint = Arrays.asList(appointments.toArray());
+        objectsToPrint = List.copyOf(appointmentDAO.findAll());
+        objectsToPrint.forEach(System.out::println);
     }
 
     public void getAppointmentById(Scanner sc) {
@@ -258,50 +301,48 @@ public class PersonalDataService {
         System.out.print("Client DNI -> ");
         String dni = sc.nextLine();
         if (dni == null || dni.isBlank()) throw new IllegalArgumentException("Dni cannot be null");
-        List<Appointment> appointments = appointmentDAO.findAppointmentByDni(dni);
-        appointments.forEach(System.out::println);
-        objectsToPrint = Arrays.asList(appointments.toArray());
+        objectsToPrint = List.copyOf(appointmentDAO.findByDni(dni));
+        objectsToPrint.forEach(System.out::println);
     }
 
     public void getAppointmentsAfterDate(Scanner sc) {
         System.out.println("Enter the date (yyyy-mm-dd): ");
         LocalDate date = HelperMethods.dateParser(sc.nextLine());
         if (date == null) throw new IllegalArgumentException("Date cannot be null");
-        List<Appointment> appointments = appointmentDAO.findAppointmentsBetweenDate(date, LocalDate.now());
-        appointments.forEach(System.out::println);
-        objectsToPrint = Arrays.asList(appointments.toArray());
+        objectsToPrint = List.copyOf(appointmentDAO.findBetweenDate(date, LocalDate.now()));
+        objectsToPrint.forEach(System.out::println);
     }
 
     public void getAppointmentsBeforeDate(Scanner sc) {
         System.out.println("Enter the date (yyyy-mm-dd): ");
         LocalDate date = HelperMethods.dateParser(sc.nextLine());
         if (date == null) throw new IllegalArgumentException("Date cannot be null");
-        List<Appointment> appointments = appointmentDAO.findAppointmentsBetweenDate(LocalDate.EPOCH, date);
-        appointments.forEach(System.out::println);
-        objectsToPrint = Arrays.asList(appointments.toArray());
+        objectsToPrint = List.copyOf(appointmentDAO.findBetweenDate(LocalDate.EPOCH, date));
+        objectsToPrint.forEach(System.out::println);
     }
 
     public void writeXmlFile(Scanner sc) throws IOException {
-        System.out.println("-- Output path: " + Paths.get(XMLWritter.OUTPUT_DIR).toAbsolutePath() + " --");
+        System.out.println(ASCIIColors.BLUE.getColor() + "Writing in: " + Paths.get(XMLWritter.OUTPUT_DIR).toAbsolutePath() + ASCIIColors.RESET.getColor());
+        if (objectsToPrint == null || objectsToPrint.isEmpty()) throw new RuntimeException("No items to be written");
         System.out.println("File name -> ");
-        String fileName = sc.nextLine();
-        if (objectsToPrint == null || objectsToPrint.size() == 0 || fileName == null || fileName.trim().isBlank())
-            throw new IllegalArgumentException("File name or list of objects to print is null or empty");
-        fileName = fileName.trim();
+        String fileName = sc.nextLine().trim();
+        if (fileName.isBlank()) throw new IllegalArgumentException("File name is empty");
         if (!fileName.endsWith(".xml")) fileName += ".xml";
         switch (objectsToPrint.get(0).getClass().getSimpleName()) {
             case "Client" -> XMLWritter.createClientXmlFile(objectsToPrint.toArray(), fileName);
             case "Appointment" -> XMLWritter.createAppointmentXmlFile(objectsToPrint.toArray(), fileName);
+            case "Tool" -> XMLWritter.createToolXmlFile(objectsToPrint.toArray(), fileName);
         }
         printGreenText("File created successfully!");
     }
 
     public void readJsonFile(Scanner sc) throws IllegalAccessException, NoSuchFieldException {
-        System.out.println("-- Input path: " + Paths.get(JSONReader.INPUT_DIR).toAbsolutePath() + " --");
-        System.out.print("(1. Client, 2. Appointment) -> ");
+        System.out.println(ASCIIColors.BLUE.getColor() + "Reading from: " + Paths.get(JSONReader.INPUT_DIR).toAbsolutePath() + ASCIIColors.RESET.getColor());
+        System.out.println("(1. Client, 2. Appointment, 3. Tool)");
+        System.out.print("Option -> ");
         byte opt = sc.nextByte();
         sc.nextLine();
-        if (opt < 1 || opt > 2) throw new IllegalArgumentException("Invalid option");
+        if (opt < 1 || opt > 3) throw new IllegalArgumentException("Invalid option");
         System.out.print("File name -> ");
         String fileName = sc.nextLine().trim();
 
@@ -312,6 +353,7 @@ public class PersonalDataService {
         switch (opt) {
             case 1 -> list.addAll(JSONReader.getClientsFromJsonFile(fileName));
             case 2 -> list.addAll(JSONReader.getAppointmentsFromJsonFile(fileName));
+            case 3 -> list.addAll(JSONReader.getToolsFromJsonFile(fileName));
         }
         list.forEach(System.out::println);
         objectsToPrint = list;
@@ -321,6 +363,7 @@ public class PersonalDataService {
         switch (opt) {
             case 1 -> clientDAO.create((List<Client>) (List<?>) list);
             case 2 -> appointmentDAO.create((List<Appointment>) (List<?>) list);
+            case 3 -> toolDAO.create((List<Tool>) (List<?>) list);
             default -> throw new RuntimeException("Objects could not be added to database");
         }
         printGreenText("Objects added to database");

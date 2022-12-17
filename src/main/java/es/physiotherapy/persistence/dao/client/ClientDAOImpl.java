@@ -20,7 +20,7 @@ public class ClientDAOImpl extends GenericDAOImpl<Client, String> implements Cli
     }
 
     @Override
-    public List<Client> findAllClients() {
+    public List<Client> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Client> criteria = builder.createQuery(Client.class);
@@ -30,7 +30,7 @@ public class ClientDAOImpl extends GenericDAOImpl<Client, String> implements Cli
     }
 
     @Override
-    public List<Client> findClientsByCity(String city) {
+    public List<Client> findByCity(String city) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Client> query = session.createQuery("from Client where city = :city", Client.class);
             query.setParameter("city", city);
@@ -39,7 +39,7 @@ public class ClientDAOImpl extends GenericDAOImpl<Client, String> implements Cli
     }
 
     @Override
-    public List<Client> findClientsBetweenBirthDate(LocalDate initDate, LocalDate endDate) {
+    public List<Client> findByBirthDateBetweenDates(LocalDate initDate, LocalDate endDate) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Client> criteria = builder.createQuery(Client.class);
