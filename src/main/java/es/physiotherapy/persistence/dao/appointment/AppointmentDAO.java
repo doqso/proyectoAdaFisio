@@ -13,7 +13,4 @@ public interface AppointmentDAO extends GenericDao<Appointment, Long> {
     List<Appointment> findAllAppointments();
 
     List<Appointment> findAppointmentsBetweenDate(LocalDate initDate, LocalDate endDate);
-
-    List<Appointment> findAppointmentsByTreatedAreas(List<String> area);
-
 }

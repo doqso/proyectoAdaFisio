@@ -1,20 +1,11 @@
 package es.physiotherapy.persistence.app;
 
-import es.physiotherapy.persistence.entity.Appointment;
-import es.physiotherapy.persistence.entity.Client;
-import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.service.PersonalDataService;
 import es.physiotherapy.persistence.util.ASCIIColors;
-import es.physiotherapy.persistence.util.HelperMethods;
-import es.physiotherapy.persistence.util.JSONReader;
-import es.physiotherapy.persistence.util.XMLWritter;
 import jakarta.persistence.PersistenceException;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.sql.Time;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class Main {
     private static final PersonalDataService PDS = new PersonalDataService();
@@ -80,19 +71,22 @@ public class Main {
     }
 
     private static void menuOptions() {
-        System.out.println();
-        System.out.println(ASCIIColors.YELLOW.getColor() + "1 - Clients\t\t\t\t\t\t\t\t" + "2 - Appointments");
-        System.out.println(ASCIIColors.CYAN.getColor() + "11. Create a new client\t\t\t\t\t" + "21. Create a new appointment");
-        System.out.println("12. Get all clients\t\t\t\t\t\t" + "22. Get all appointments");
-        System.out.println("13. Get a client by DNI\t\t\t\t\t" + "23. Get appointments by ID");
-        System.out.println("14. Get clients by city\t\t\t\t\t" + "24. Get appointments by client DNI");
-        System.out.println("15. Get clients after birth date\t\t" + "25. Get appointments after date");
-        System.out.println("16. Get clients before birth date\t\t" + "26. Get appointments before date");
-        System.out.println("17. Update a client\t\t\t\t\t\t" + "27. Update an appointment");
-        System.out.println("18. Delete a client\t\t\t\t\t\t" + "28. Delete an appointment");
-        System.out.println(ASCIIColors.YELLOW.getColor() + "3 - Treatment area\t\t\t\t\t\t" + "4. I/O Management");
-        System.out.println(ASCIIColors.CYAN.getColor() + "31. Create treatment areas \t\t\t\t" + "41. Write last 'GET' query to XML file");
-        System.out.println("32. Update a treatment area \t\t\t" + "42. Read object from JSON file");
-        System.out.println("33. Delete a treatment area \t\t\t" + "43. Recover las deleted item" + ASCIIColors.RESET.getColor());
+        System.out.print(ASCIIColors.YELLOW.getColor());
+        System.out.println("1 - Clients" + "\t".repeat(8) + "2 - Appointments");
+        System.out.print(ASCIIColors.CYAN.getColor());
+        System.out.println("11. Create a new client" + "\t".repeat(5) + "21. Create a new appointment");
+        System.out.println("12. Get all clients" + "\t".repeat(6) + "22. Get all appointments");
+        System.out.println("13. Get a client by DNI" + "\t".repeat(5) + "23. Get appointments by ID");
+        System.out.println("14. Get clients by city" + "\t".repeat(5) + "24. Get appointments by client DNI");
+        System.out.println("15. Get clients after birth date" + "\t".repeat(2) + "25. Get appointments after date");
+        System.out.println("16. Get clients before birth date" + "\t".repeat(2) + "26. Get appointments before date");
+        System.out.println("17. Update a client" + "\t12".repeat(6) + "27. Update an appointment");
+        System.out.println("18. Delete a client" + "\t".repeat(6) + "28. Delete an appointment");
+        System.out.print(ASCIIColors.YELLOW.getColor());
+        System.out.println("3 - Treatment area" + "\t".repeat(6) + "4. I/O Management");
+        System.out.print(ASCIIColors.CYAN.getColor());
+        System.out.println("31. Create treatment areas" + "\t".repeat(4) + "41. Write last 'GET' query to XML file");
+        System.out.println("32. Update a treatment area" + "\t".repeat(4) + "42. Read object from JSON file");
+        System.out.println("33. Delete a treatment area" + "\t".repeat(4) + "43. Recover las deleted item" + ASCIIColors.RESET.getColor());
     }
 }

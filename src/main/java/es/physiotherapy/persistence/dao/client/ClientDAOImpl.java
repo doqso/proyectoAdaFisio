@@ -8,9 +8,11 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ClientDAOImpl extends GenericDAOImpl<Client, String> implements ClientDAO {
     public ClientDAOImpl() {
@@ -18,14 +20,21 @@ public class ClientDAOImpl extends GenericDAOImpl<Client, String> implements Cli
     }
 
     @Override
-    public List<Client> findClientsByCity(String city) {
+    public List<Client> findAllClients() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Client> criteria = builder.createQuery(Client.class);
-            Root<Client> root = criteria.from(Client.class);
-
-            criteria.where(builder.equal(root.get(Client_.city), city));
+            criteria.from(Client.class);
             return session.createQuery(criteria).getResultList();
+        }
+    }
+
+    @Override
+    public List<Client> findClientsByCity(String city) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Client> query = session.createQuery("from Client where city = :city", Client.class);
+            query.setParameter("city", city);
+            return query.getResultStream().toList();
         }
     }
 
@@ -38,16 +47,6 @@ public class ClientDAOImpl extends GenericDAOImpl<Client, String> implements Cli
 
             criteria.where(builder.between(root.get(
                     Client_.birthDate), initDate, endDate));
-            return session.createQuery(criteria).getResultList();
-        }
-    }
-
-    @Override
-    public List<Client> findAllClients() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<Client> criteria = builder.createQuery(Client.class);
-            criteria.from(Client.class);
             return session.createQuery(criteria).getResultList();
         }
     }

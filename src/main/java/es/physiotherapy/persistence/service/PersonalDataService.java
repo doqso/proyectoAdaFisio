@@ -52,13 +52,12 @@ public class PersonalDataService {
         client.setCity(sc.nextLine());
         System.out.print("Enter the client's bitrh date (yyyy-mm-dd): ");
         client.setBirthDate(HelperMethods.dateParser(sc.nextLine()));
-        client.getAppointments().forEach(a -> a.setId(null));
         clientDAO.create(client);
         printGreenText("Client created successfully!");
     }
 
     public void updateClient(Scanner sc) {
-        System.out.println("Enter the DNI of the client to update");
+        System.out.println("Enter the client's dni: ");
         String dni = sc.nextLine();
         Client client = clientDAO.findById(dni).orElse(null);
         if (client == null) throw new RuntimeException("Client not found");

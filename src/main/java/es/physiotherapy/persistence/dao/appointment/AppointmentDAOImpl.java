@@ -3,11 +3,11 @@ package es.physiotherapy.persistence.dao.appointment;
 import es.physiotherapy.persistence.dao.GenericDAOImpl;
 import es.physiotherapy.persistence.entity.Appointment;
 import es.physiotherapy.persistence.entity.Appointment_;
-import es.physiotherapy.persistence.entity.Client_;
 import es.physiotherapy.persistence.entity.TreatedArea;
 import es.physiotherapy.persistence.util.HibernateUtil;
 import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,12 +20,9 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
     @Override
     public List<Appointment> findAppointmentByDni(String dni) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<Appointment> criteria = builder.createQuery(Appointment.class);
-            Root<Appointment> root = criteria.from(Appointment.class);
-            criteria.select(root)
-                    .where(builder.equal(root.get(Appointment_.client).get(Client_.dni), dni));
-            return session.createQuery(criteria).getResultList();
+            Query<Appointment> query = session.createQuery("from Appointment where client.dni = :dni", Appointment.class);
+            query.setParameter("dni", dni);
+            return query.getResultStream().toList();
         }
     }
 
@@ -49,23 +46,6 @@ public class AppointmentDAOImpl extends GenericDAOImpl<Appointment, Long> implem
 
             criteria.where(builder.between(root.get(
                     Appointment_.date), initDate, endDate));
-            return session.createQuery(criteria).getResultList();
-        }
-    }
-
-    @Override
-    public List<Appointment> findAppointmentsByTreatedAreas(List<String> areas) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<Appointment> criteria = builder.createQuery(Appointment.class);
-            Root<Appointment> root = criteria.from(Appointment.class);
-
-            Join<Appointment, TreatedArea> join = root.join(Appointment_.treatedArea);
-            Predicate predicate = builder.conjunction();
-            for (String area : areas) {
-                predicate = builder.and(predicate, builder.isTrue(join.get(area)));
-            }
-            criteria.where(predicate);
             return session.createQuery(criteria).getResultList();
         }
     }
