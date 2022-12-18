@@ -53,7 +53,7 @@ Esta aplicación trata sobre la gestión de los datos de una fisioterapia, la ba
   ]
 }
 ```
-* **Appointment** -> Todas las areas tratadas, como cervical y dorsal, se parsearán como **True** cuando se lea el archivo JSON, el resto de campos de la tabla **treated_area** que no aparecen en el fichero se guardan como **Flase**
+* **Appointment** -> Todas las areas tratadas, como cervical y dorsal, se parsearán como **True** cuando se lea el archivo JSON, el resto de campos de la tabla **treated_area** que no aparecen en el fichero se guardan como **False**
 ```
 {
   "appointments": [
