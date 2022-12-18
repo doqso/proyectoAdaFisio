@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="META-INF:hibernate.cfg.xml/Hibernate">
+  <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.45">
+    <root id="1"/>
+    <schema id="2" parent="1" name="examen2patri"/>
+    <schema id="3" parent="1" name="hotel_manager"/>
+    <schema id="4" parent="1" name="information_schema"/>
+    <schema id="5" parent="1" name="mysql"/>
+    <schema id="6" parent="1" name="performance_schema"/>
+    <schema id="7" parent="1" name="physio">
+      <Current>1</Current>
+    </schema>
+    <schema id="8" parent="1" name="sqlito"/>
+    <schema id="9" parent="1" name="sys"/>
+  </database-model>
+</dataSource>

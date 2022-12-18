@@ -25,14 +25,15 @@ Esta aplicación trata sobre la gestión de los datos de una fisioterapia, la ba
     * _source my.sql_
     * _source C:\Users\Usuario\Documents\my.sql_ (si se encuentra en otra ruta)
 4. Revisa que se haya creado la base de datos **physio** y las tablas
+
 ## **Como utilizar el programa**
 * Para ejecutar el programa no hace falta ningun argumento
 * La interfaz de comandos muestra al usuario las opciones disponibles
 * El usuario debe introducir el numero de la opción que desea ejecutar
 * Cada consulta ejecutada de tipo **_SELECT_** que devuelva un resultado, se almacenará en una variable, el cual podremos **exportar** en _.XML_ cuando nosotros le indiquemos
-* Los archivos **XML** se escribirán en la carpeta **output**, si no existe, se crea automaticamente en la misma ruta que el archivo _jar_. Esta carpeta se puede cambiar por otra en el programa
+* Los archivos **XML** se escribirán en la carpeta **output** por defecto, si no existe, se crea automaticamente en la misma ruta donde se encuentre situado la terminal de comandos. Esta carpeta se puede cambiar por otra en el programa
     * _C:/ruta/del/archivo/jar/output_
-* Los archivos **JSON** se leerán desde la carpeta **input** por defecto, ubicado en el mismo directorio que el archivo _.jar_. Esta carpeta se puede cambiar por otra en el programa
+* Los archivos **JSON** se leerán desde la carpeta **input** por defecto, si no existe, se crea automaticamente en la misma ruta donde se encuentre situado la terminal de comandos. Esta carpeta se puede cambiar por otra en el programa
     * _C:/ruta/del/archivo/jar/input_
 * La salida del programa se mostrará en la consola, el cual deberá ser compatible con la lectura de **colores ASCII**, estas terminales pueden ser la de **Linux** o **GIT Bash**, entre algunos otros. **_No es compatible con la terminal de Windows_**
 
