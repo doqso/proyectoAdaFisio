@@ -57,6 +57,7 @@ public class Tool {
         this.appointments = appointments;
     }
 
+
     @Override
     public String toString() {
         return ASCIIColors.GREEN.getColor()+

@@ -27,9 +27,7 @@ public class Client {
     @Column(name = Client_.BIRTH_DATE, nullable = false)
     private LocalDate birthDate;
 
-    @OneToMany(mappedBy = Appointment_.CLIENT,
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = Appointment_.CLIENT)
     private List<Appointment> appointments = new ArrayList<>();
 
     public Client() {

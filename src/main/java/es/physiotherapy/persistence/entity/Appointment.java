@@ -24,7 +24,7 @@ public class Appointment {
     @OneToOne(mappedBy = TreatedArea_.APPOINTMENT,
             cascade = CascadeType.ALL)
     private TreatedArea treatedArea;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "appointment_use_tool",
             joinColumns = @JoinColumn(name = "appointment_id"),
             inverseJoinColumns = @JoinColumn(name = "tool_id"))
@@ -95,6 +95,14 @@ public class Appointment {
 
     public void setTreatedArea(TreatedArea treatedArea) {
         this.treatedArea = treatedArea;
+    }
+
+    public List<Tool> getTools() {
+        return tools;
+    }
+
+    public void setTools(List<Tool> tools) {
+        this.tools = tools;
     }
 
     @Override

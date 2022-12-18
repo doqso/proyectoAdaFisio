@@ -19,8 +19,6 @@ import es.physiotherapy.persistence.util.XMLWritter;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -77,13 +75,14 @@ public class PersonalDataService {
     }
 
     public void deleteTool(Scanner sc) {
-        System.out.println("Introduce the id of the tool you want to delete");
+        System.out.print("Tool ID -> ");
         long id = sc.nextLong();
         sc.nextLine();
         Tool tool = toolDAO.findById(id).orElse(null);
         if (tool == null) throw new IllegalArgumentException("No tool with id " + id + " found");
         toolDAO.delete(tool);
-        System.out.println("Tool with id " + id + " deleted");
+        printGreenText("Tool deleted");
+        lastDeletedObject = tool;
     }
 
     public void createClient(Scanner sc) {
@@ -380,15 +379,22 @@ public class PersonalDataService {
         switch (lastDeletedObject.getClass().getSimpleName()) {
             case "Client" -> {
                 Client client = (Client) lastDeletedObject;
-                client.getAppointments().forEach(appointment -> appointment.setId(null));
+                client.setAppointments(null);
                 clientDAO.create(client);
             }
             case "Appointment" -> {
                 Appointment appointment = (Appointment) lastDeletedObject;
                 appointment.setId(null);
+                appointment.setTools(null);
                 appointmentDAO.create(appointment);
             }
             case "TreatedArea" -> treatedAreaDAO.create((TreatedArea) lastDeletedObject);
+            case "Tool" -> {
+                Tool tool = (Tool) lastDeletedObject;
+                tool.setId(null);
+                tool.setAppointments(null);
+                toolDAO.create(tool);
+            }
         }
         printGreenText("Object recovered successfully");
         lastDeletedObject = null;
