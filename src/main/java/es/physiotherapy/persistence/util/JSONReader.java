@@ -10,17 +10,18 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JSONReader {
-    public static final String INPUT_DIR = "input/";
+    private static Path inputDir = Paths.get("input");
 
     public static List<Appointment> getAppointmentsFromJsonFile(String filename) throws NoSuchFieldException, IllegalAccessException {
         String jsonString = null;
         try {
-            jsonString = Files.readString(Paths.get(INPUT_DIR + filename));
+            jsonString = Files.readString(inputDir.resolve(filename));
         } catch (IOException e) {
             throw new RuntimeException("Cannot read file " + filename, e);
         }
@@ -49,10 +50,10 @@ public class JSONReader {
         return appointments;
     }
 
-    public static List<Tool> getToolsFromJsonFile(String filename){
+    public static List<Tool> getToolsFromJsonFile(String filename) {
         String jsonString = null;
         try {
-            jsonString = Files.readString(Paths.get(INPUT_DIR + filename));
+            jsonString = Files.readString(inputDir.resolve(filename));
         } catch (IOException e) {
             throw new RuntimeException("Cannot read file " + filename, e);
         }
@@ -71,7 +72,7 @@ public class JSONReader {
     public static List<Client> getClientsFromJsonFile(String filename) throws IllegalAccessException {
         String jsonString = null;
         try {
-            jsonString = Files.readString(Paths.get(INPUT_DIR + filename));
+            jsonString = Files.readString(inputDir.resolve(filename));
         } catch (IOException e) {
             throw new RuntimeException("Cannot read file " + filename, e);
         }
@@ -91,5 +92,13 @@ public class JSONReader {
             clients.add(client);
         }
         return clients;
+    }
+
+    public static Path getInputDir() {
+        return inputDir;
+    }
+
+    public static void setInputDir(String inputDir) {
+        JSONReader.inputDir = Paths.get(inputDir);
     }
 }

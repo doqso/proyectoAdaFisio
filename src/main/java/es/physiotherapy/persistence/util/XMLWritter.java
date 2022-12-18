@@ -21,10 +21,9 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 public class XMLWritter {
-    public static final String OUTPUT_DIR = "output/";
+    private static Path outputDir = Paths.get("output");
 
     private static Document documentBuilder() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -176,14 +175,20 @@ public class XMLWritter {
         } catch (TransformerConfigurationException e) {
             throw new RuntimeException("Error creating transformer", e);
         }
-        Path dir = Paths.get(OUTPUT_DIR);
-        if (!Files.exists(dir)) Files.createDirectory(dir);
-        try (FileOutputStream writer = new FileOutputStream(OUTPUT_DIR + fileName)) {
+        try (FileOutputStream writer = new FileOutputStream(outputDir.resolve(fileName).toFile())) {
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(writer);
             transformer.transform(source, result);
         } catch (TransformerException e) {
             throw new RuntimeException("Error transforming document to create XML", e);
         }
+    }
+
+    public static Path getOutputDir() {
+        return outputDir;
+    }
+
+    public static void setOutputDir(String outputDir) {
+        XMLWritter.outputDir = Paths.get(outputDir);
     }
 }

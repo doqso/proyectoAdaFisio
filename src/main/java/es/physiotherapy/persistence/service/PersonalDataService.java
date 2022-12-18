@@ -18,6 +18,8 @@ import es.physiotherapy.persistence.util.JSONReader;
 import es.physiotherapy.persistence.util.XMLWritter;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -322,7 +324,9 @@ public class PersonalDataService {
     }
 
     public void writeXmlFile(Scanner sc) throws IOException {
-        System.out.println(ASCIIColors.BLUE.getColor() + "Writing in: " + Paths.get(XMLWritter.OUTPUT_DIR).toAbsolutePath() + ASCIIColors.RESET.getColor());
+        if (!Files.exists(XMLWritter.getOutputDir())) Files.createDirectories(XMLWritter.getOutputDir());
+        System.out.println(ASCIIColors.BLUE.getColor() + "Writing in: " +
+                XMLWritter.getOutputDir().toAbsolutePath() + ASCIIColors.RESET.getColor());
         if (objectsToPrint == null || objectsToPrint.isEmpty()) throw new RuntimeException("No items to be written");
         System.out.println("File name -> ");
         String fileName = sc.nextLine().trim();
@@ -336,8 +340,10 @@ public class PersonalDataService {
         printGreenText("File created successfully!");
     }
 
-    public void readJsonFile(Scanner sc) throws IllegalAccessException, NoSuchFieldException {
-        System.out.println(ASCIIColors.BLUE.getColor() + "Reading from: " + Paths.get(JSONReader.INPUT_DIR).toAbsolutePath() + ASCIIColors.RESET.getColor());
+    public void readJsonFile(Scanner sc) throws IllegalAccessException, NoSuchFieldException, IOException {
+        if (!Files.exists(JSONReader.getInputDir())) Files.createDirectories(JSONReader.getInputDir());
+        System.out.println(ASCIIColors.BLUE.getColor() + "Reading from: " +
+                JSONReader.getInputDir().toAbsolutePath() + ASCIIColors.RESET.getColor());
         System.out.println("(1. Client, 2. Appointment, 3. Tool)");
         System.out.print("Option -> ");
         byte opt = sc.nextByte();
@@ -388,8 +394,44 @@ public class PersonalDataService {
         lastDeletedObject = null;
     }
 
+    public void setOutputDirectoryForXml(Scanner sc) throws IOException {
+        System.out.println(ASCIIColors.BLUE.getColor() +
+                "Current output directory: " + XMLWritter.getOutputDir()
+                .toAbsolutePath() + ASCIIColors.RESET.getColor());
+        System.out.println("Do you want to change it? (y/n)");
+        if (!sc.nextLine().trim().equalsIgnoreCase("y")) return;
+        System.out.print("new output directory -> ");
+        String newDir = sc.nextLine();
+        if (newDir.isBlank()) throw new IllegalArgumentException("Directory cannot be empty");
+        XMLWritter.setOutputDir(newDir);
+        if (!Files.exists(XMLWritter.getOutputDir())) {
+            System.out.println("Directory does not exist, creating...");
+            Files.createDirectories(XMLWritter.getOutputDir());
+        }
+        printGreenText("Output directory changed successfully");
+    }
+
+    public void setInputDirectoryForJson(Scanner sc) throws IOException {
+        System.out.println(ASCIIColors.BLUE.getColor() +
+                "Current input directory: " + JSONReader.getInputDir()
+                .toAbsolutePath() + ASCIIColors.RESET.getColor());
+        System.out.println("Do you want to change it? (y/n)");
+        if (!sc.nextLine().trim().equalsIgnoreCase("y")) return;
+        System.out.print("new input directory -> ");
+        String newDir = sc.nextLine();
+        if (newDir.isBlank()) throw new IllegalArgumentException("Directory cannot be empty");
+        JSONReader.setInputDir(newDir);
+        if (!Files.exists(JSONReader.getInputDir())) {
+            System.out.println("Directory does not exist, creating...");
+            Files.createDirectories(JSONReader.getInputDir());
+        }
+        printGreenText("Input directory changed successfully");
+    }
+
     private static void printGreenText(Object text) {
         System.out.println(ASCIIColors.GREEN.getColor() +
                 text + ASCIIColors.RESET.getColor());
     }
+
+
 }

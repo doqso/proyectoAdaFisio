@@ -47,9 +47,11 @@ public class Main {
                     case 32 -> PDS.updateTreatedArea(sc);
                     case 33 -> PDS.deleteTreatedArea(sc);
                     // 4. I/O
-                    case 41 -> PDS.writeXmlFile(sc);
-                    case 42 -> PDS.readJsonFile(sc);
+                    case 41 -> PDS.readJsonFile(sc);
+                    case 42 -> PDS.writeXmlFile(sc);
                     case 43 -> PDS.recoverLastDeletedObject();
+                    case 44 -> PDS.setInputDirectoryForJson(sc);
+                    case 45 -> PDS.setOutputDirectoryForXml(sc);
                     // 5. Tools
                     case 51 -> PDS.createTool(sc);
                     case 52 -> PDS.getAllTools();
@@ -102,16 +104,18 @@ public class Main {
         System.out.println("3 - Treatment area" + "\t".repeat(6) + "4. I/O Management");
         System.out.print(ASCIIColors.CYAN.getColor());
         System.out.print("31. Add a new treated areas");
-        System.out.println("\t".repeat(4) + "41. Write last 'GET' query to XML file");
+        System.out.println("\t".repeat(4) + "41. Read object from JSON file");
         System.out.print("32. Update a treatment area");
-        System.out.println("\t".repeat(4) + "42. Read object from JSON file");
+        System.out.println("\t".repeat(4) + "42. Write last 'GET' query to XML file");
         System.out.print("33. Delete a treatment area");
         System.out.println("\t".repeat(4) + "43. Recover las deleted item");
         // Tools
         System.out.print(ASCIIColors.YELLOW.getColor());
-        System.out.println("5. Tools");
+        System.out.print("5. Tools");
         System.out.print(ASCIIColors.CYAN.getColor());
-        System.out.println("51. Add a new tool");
+        System.out.println("\t".repeat(8) + "44. Change input directory for JSON files");
+        System.out.print("51. Add a new tool");
+        System.out.println("\t".repeat(6) + "45. Change output directory for XML files");
         System.out.println("52. Get all tools");
         System.out.println("53. Get a tool by ID");
         System.out.println("54. Get tools by appointment ID");
